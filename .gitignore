@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Environment variables (keep secrets safe!)
+.env
+backend/.env
+.env.local
+.env.production
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Build output
+dist/
+build/
+
+# Large zip archives (don't push to git)
+backend.zip
+*.zip

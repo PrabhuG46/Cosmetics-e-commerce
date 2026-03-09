@@ -1,0 +1,31 @@
+# ══════════════════════════════════════════════════════════
+#  Netlify Configuration — Gwen Beauty Studio
+# ══════════════════════════════════════════════════════════
+
+[build]
+  # Netlify will publish everything from the root directory
+  publish = "."
+
+  # No build command needed (pure static site)
+  # command = ""
+
+# ── Redirect Rules ─────────────────────────────────────────
+# Lets admin.html work properly
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+# Root fallback — serve index.html for all unknown paths
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ── Security Headers ────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
