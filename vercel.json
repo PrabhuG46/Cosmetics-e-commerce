@@ -6,7 +6,7 @@
       "destination": "/admin.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!.*\\.).*)",
       "destination": "/index.html"
     }
   ],
