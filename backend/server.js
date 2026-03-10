@@ -17,7 +17,6 @@ const ALLOWED_ORIGINS = [
     'http://localhost:5001',
     'http://127.0.0.1:5001',
     'https://gwen46.netlify.app',
-    'https://gwen46.netlify.app/',
     'http://127.0.0.1:5500',
     'http://localhost:5500',
 ];
