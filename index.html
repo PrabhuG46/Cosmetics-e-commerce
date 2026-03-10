@@ -356,6 +356,9 @@
             background: transparent;
             cursor: pointer;
             animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .product-image-container {
@@ -392,6 +395,9 @@
         .product-info {
             padding: 0.8rem 0;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
 
         .product-name {
@@ -405,6 +411,7 @@
             justify-content: center;
             gap: 0.5rem;
             font-size: 0.8rem;
+            margin-top: auto;
         }
 
         .current-price {
@@ -2955,7 +2962,7 @@ ${product.discount ? `<div class="sale-badge">-${product.discount}%</div>` : ''}
 <div class="product-name">${product.name}</div>
 <div class="product-price">
 <span class="current-price">₹${product.price}</span>
-<span class="old-price">₹${product.oldPrice}</span>
+${product.oldPrice ? `<span class="old-price">₹${product.oldPrice}</span>` : ''}
 </div>
 ${qty > 0 ? `
 <div class="grid-qty-control" onclick="event.stopPropagation()">
@@ -2974,7 +2981,10 @@ ${qty > 0 ? `
         function displayFeaturedProducts() {
             const container = document.getElementById('featuredProducts');
             if (!container) return;
-            const featured = products.filter(p => p.featured).slice(0, 12);
+            let featured = products.filter(p => p.featured).slice(0, 12);
+            if (featured.length === 0) {
+                featured = [...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 4);
+            }
             container.innerHTML = featured.map((p, i) => createProductCard(p, i)).join('');
         }
 
