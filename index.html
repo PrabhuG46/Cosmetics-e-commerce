@@ -2615,7 +2615,7 @@
             document.getElementById('navMenu').classList.toggle('active');
         }
 
-        function showPage(pageName) {
+        function showPage(pageName, addToHistory = true) {
             const user = localStorage.getItem('user');
 
             if (pageName === 'profile' && !user) {
@@ -2630,13 +2630,29 @@
             });
 
             const target = document.getElementById(pageName + 'Page');
-            if (target) target.classList.remove('hidden');
+            if (target) {
+                target.classList.remove('hidden');
+            } else {
+                document.getElementById('homePage').classList.remove('hidden');
+                pageName = 'home';
+            }
 
             if (pageName === 'profile') populateProfile();
 
             document.getElementById('navMenu').classList.remove('active');
             window.scrollTo(0, 0);
+
+            // History API integration for Back/Forward/Refresh buttons
+            if (addToHistory) {
+                const urlPath = pageName === 'home' ? '/' : `/?page=${pageName}`;
+                window.history.pushState({ page: pageName }, '', urlPath);
+            }
         }
+
+        window.addEventListener('popstate', (event) => {
+            const pageName = event.state ? event.state.page : 'home';
+            showPage(pageName, false);
+        });
 
         function populateProfile() {
             const user = JSON.parse(localStorage.getItem('user'));
@@ -2782,11 +2798,6 @@
                 if (res.ok) {
                     document.getElementById('fpStep1').classList.add('hidden');
                     document.getElementById('fpStep2').classList.remove('hidden');
-
-                    if (data.fallbackOtp) {
-                        document.getElementById('fpOtp').value = data.fallbackOtp;
-                    }
-
                     showNotification(data.message);
                 } else {
                     showNotification(data.message || 'Error. Please try again.');
@@ -2897,10 +2908,6 @@
                         otpStep.classList.remove('hidden');
                         signupBtn.textContent = 'Verify & Create Account';
 
-                        if (data.fallbackOtp) {
-                            document.getElementById('signupOtp').value = data.fallbackOtp;
-                        }
-
                         showNotification(data.message);
                     } else {
                         signupBtn.textContent = originalText;
@@ -3008,10 +3015,16 @@ ${qty > 0 ? `
         function displayFeaturedProducts() {
             const container = document.getElementById('featuredProducts');
             if (!container) return;
-            let featured = products.filter(p => p.featured).slice(0, 12);
-            if (featured.length === 0) {
-                featured = [...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 4);
+
+            let featured = products.filter(p => p.featured);
+
+            if (featured.length < 6) {
+                const others = products.filter(p => !p.featured).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                featured = [...featured, ...others];
             }
+
+            featured = featured.slice(0, 12);
+
             container.innerHTML = featured.map((p, i) => createProductCard(p, i)).join('');
         }
 
@@ -3681,7 +3694,21 @@ ${qty > 0 ? `
             }, 2500);
         }
 
-        window.addEventListener('DOMContentLoaded', () => { fetchProducts(); updateWishlistBadge(); });
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchProducts();
+            updateWishlistBadge();
+
+            // Handle page load/refresh from URL query param
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialPage = urlParams.get('page');
+
+            if (initialPage) {
+                showPage(initialPage, false);
+            } else {
+                // Default to home page if no param, but don't duplicate history state
+                showPage('home', false);
+            }
+        });
 
     </script>
 </body>
