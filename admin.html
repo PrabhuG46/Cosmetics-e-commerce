@@ -645,12 +645,56 @@
         // API_URL is already defined globally by config.js loaded in <head>
         let token = localStorage.getItem('adminToken');
 
-        // Initial Auth Check
-        if (token) {
+        function showAdminSection(section, addToHistory = true) {
+            if (!token) {
+                document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('dashboard').style.display = 'none';
+                return;
+            }
+
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            loadDashboard();
+
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+            const activeMenuItem = document.querySelector(`.sidebar-menu li[data-section="${section}"]`);
+            if (activeMenuItem) activeMenuItem.classList.add('active');
+
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            const targetSection = document.getElementById(section);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            } else {
+                document.getElementById('dashboardSection').classList.add('active');
+                section = 'dashboardSection';
+            }
+
+            if (section === 'dashboardSection') loadDashboard();
+            if (section === 'productsSection') loadProducts();
+            if (section === 'ordersSection') loadOrders();
+            if (section === 'usersSection') loadUsers();
+
+            if (addToHistory) {
+                const urlPath = section === 'dashboardSection' ? '/admin.html' : `/admin.html?section=${section}`;
+                window.history.pushState({ section }, '', urlPath);
+            }
         }
+
+        window.addEventListener('popstate', (event) => {
+            const section = event.state ? event.state.section : 'dashboardSection';
+            showAdminSection(section, false);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialSection = urlParams.get('section') || 'dashboardSection';
+
+            if (token) {
+                showAdminSection(initialSection, false);
+            } else {
+                document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('dashboard').style.display = 'none';
+            }
+        });
 
         // Toggle Password Visibility
         const eyeIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
@@ -680,9 +724,7 @@
                 if (response.ok) {
                     token = data.token;
                     localStorage.setItem('adminToken', token);
-                    document.getElementById('loginPage').style.display = 'none';
-                    document.getElementById('dashboard').style.display = 'block';
-                    loadDashboard();
+                    showAdminSection('dashboardSection', false);
                 } else {
                     alert(data.message || 'Login failed');
                 }
@@ -699,16 +741,7 @@
         // Section Navigation
         document.querySelectorAll('.sidebar-menu li').forEach(item => {
             item.addEventListener('click', () => {
-                document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-                item.classList.add('active');
-                const section = item.dataset.section;
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                document.getElementById(section).classList.add('active');
-
-                if (section === 'dashboardSection') loadDashboard();
-                if (section === 'productsSection') loadProducts();
-                if (section === 'ordersSection') loadOrders();
-                if (section === 'usersSection') loadUsers();
+                showAdminSection(item.dataset.section);
             });
         });
 
