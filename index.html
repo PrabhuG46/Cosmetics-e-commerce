@@ -2781,6 +2781,11 @@
                 if (res.ok) {
                     document.getElementById('fpStep1').classList.add('hidden');
                     document.getElementById('fpStep2').classList.remove('hidden');
+
+                    if (data.fallbackOtp) {
+                        document.getElementById('fpOtp').value = data.fallbackOtp;
+                    }
+
                     showNotification(data.message);
                 } else {
                     showNotification(data.message || 'Error. Please try again.');
@@ -2890,7 +2895,12 @@
                         consentLabel.classList.add('hidden');
                         otpStep.classList.remove('hidden');
                         signupBtn.textContent = 'Verify & Create Account';
-                        showNotification(`OTP sent to ${email}`);
+
+                        if (data.fallbackOtp) {
+                            document.getElementById('signupOtp').value = data.fallbackOtp;
+                        }
+
+                        showNotification(data.message);
                     } else {
                         signupBtn.textContent = originalText;
                         showNotification(data.message || 'Error sending OTP. Try again.');

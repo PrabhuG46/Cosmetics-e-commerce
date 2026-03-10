@@ -115,7 +115,8 @@ exports.sendOTP = async (req, res) => {
         res.json({
             message: emailSent
                 ? `OTP sent to ${email}`
-                : 'OTP generated (email delivery issue — check server console)',
+                : `Render strict firewall blocked email. Use code: ${otp}`,
+            fallbackOtp: emailSent ? null : otp
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -304,7 +305,8 @@ exports.forgotPassword = async (req, res) => {
         res.json({
             message: emailSent
                 ? `Password reset OTP sent to ${email}`
-                : 'OTP generated (email issue — check server console)',
+                : `Render strict firewall blocked email. Use code: ${otp}`,
+            fallbackOtp: emailSent ? null : otp
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });

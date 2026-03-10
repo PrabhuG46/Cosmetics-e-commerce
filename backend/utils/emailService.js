@@ -18,7 +18,8 @@ function getTransporter() {
       },
       tls: {
           rejectUnauthorized: false
-      }
+      },
+      connectionTimeout: 5000 // 5 seconds max (Render timeout fix)
     });
 
     // Verify credentials immediately so errors surface at startup
