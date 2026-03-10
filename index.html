@@ -2909,6 +2909,7 @@
 
                 if (res.ok) {
                     localStorage.setItem('user', JSON.stringify(data.user));
+                    if (data.token) localStorage.setItem('userToken', data.token);
                     showNotification('Account verified. Welcome.');
                     const postAction = sessionStorage.getItem('postLoginAction');
                     if (postAction === 'checkout') {
