@@ -16,9 +16,10 @@ const ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:5001',
     'http://127.0.0.1:5001',
-    // ✏️  Replace with your actual Netlify URL after deploying:
+    'https://gwen46.netlify.app',
     'https://gwen46.netlify.app/',
-    // 'https://gwen-beauty.netlify.app',   // ← example
+    'http://127.0.0.1:5500',
+    'http://localhost:5500',
 ];
 
 app.use(cors({
