@@ -842,8 +842,17 @@
         }
 
         .pd-trust-icon {
-            font-size: 1.3rem;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            stroke: var(--text-main);
+        }
+        .pd-trust-icon svg {
+            width: 20px;
+            height: 20px;
         }
 
         .pd-trust-label {
@@ -972,8 +981,15 @@
         }
 
         .pd-delivery-icon {
-            font-size: 1rem;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            stroke: var(--text-muted);
+        }
+        .pd-delivery-icon svg {
+            width: 15px;
+            height: 15px;
         }
 
         /* Tabs */
@@ -1575,8 +1591,69 @@
         .loading {
             text-align: center;
             padding: 4rem;
-            opacity: 0.6;
-            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .loading::before {
+            content: '';
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--border);
+            border-top-color: var(--text-main);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Global Overlay Loader */
+        .global-loader {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(250, 249, 246, 0.85); /* Slightly transparent background color */
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .global-loader.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .global-loader-spinner {
+            width: 45px;
+            height: 45px;
+            border: 3px solid #e8e0d8; /* Light border */
+            border-top-color: var(--text-main); /* Dark border for animation */
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        
+        .global-loader-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-main);
+            font-weight: 500;
         }
 
         /* Redesigned Bag Items */
@@ -1693,6 +1770,11 @@
 </head>
 
 <body>
+    <!-- Global Overlay Loader -->
+    <div class="global-loader" id="globalLoader">
+        <div class="global-loader-spinner"></div>
+        <div class="global-loader-text" id="globalLoaderText">Loading...</div>
+    </div>
     <header class="header">
         <div class="header-content">
             <div class="logo" onclick="showPage('home')" style="display: flex; align-items: center; gap: 0.5rem;">
@@ -2515,6 +2597,19 @@
         let isSigningUp = false;
         let searchQuery = '';
 
+        // ── Global Loader ─────────────────────────────
+        function showLoader(text = 'Loading...') {
+            const loaderText = document.getElementById('globalLoaderText');
+            if (loaderText) loaderText.textContent = text;
+            const loader = document.getElementById('globalLoader');
+            if (loader) loader.classList.add('active');
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('globalLoader');
+            if (loader) loader.classList.remove('active');
+        }
+
         // ── Wishlist ────────────────────────────────
         function isWishlisted(id) { return wishlist.includes(id); }
 
@@ -2847,6 +2942,7 @@
                 return showPage('auth');
             }
 
+            showLoader('Saving Profile...');
             try {
                 const res = await fetch(`${API_URL}/auth/profile`, {
                     method: 'PUT',
@@ -2875,6 +2971,8 @@
                 }
             } catch (e) {
                 showNotification('Connection error. Is the server running?');
+            } finally {
+                hideLoader();
             }
         }
 
@@ -2923,6 +3021,8 @@
         async function handleForgotSendOTP() {
             const email = document.getElementById('fpEmail').value.trim();
             if (!email || !email.includes('@')) return showNotification('Enter a valid email address.');
+            
+            showLoader('Sending Reset Code...');
             try {
                 const res = await fetch(`${API_URL}/auth/forgot-password`, {
                     method: 'POST',
@@ -2939,6 +3039,8 @@
                 }
             } catch (e) {
                 showNotification('Connection error.');
+            } finally {
+                hideLoader();
             }
         }
 
@@ -2952,6 +3054,7 @@
             if (!newPass || newPass.length < 6) return showNotification('Password must be at least 6 characters.');
             if (newPass !== confirmPass) return showNotification('Passwords do not match.');
 
+            showLoader('Resetting Password...');
             try {
                 const res = await fetch(`${API_URL}/auth/reset-password`, {
                     method: 'POST',
@@ -2967,6 +3070,8 @@
                 }
             } catch (e) {
                 showNotification('Connection error.');
+            } finally {
+                hideLoader();
             }
         }
 
@@ -2977,6 +3082,7 @@
             if (!phone || !password) return showNotification('Phone and password are required.');
             if (phone.length !== 10) return showNotification('Enter a valid 10-digit phone number.');
 
+            showLoader('Signing in...');
             try {
                 const res = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
@@ -3003,6 +3109,8 @@
                 }
             } catch (e) {
                 showNotification('Connection error. Is the server running?');
+            } finally {
+                hideLoader();
             }
         }
 
@@ -3029,6 +3137,7 @@
                 signupBtn.disabled = true;
                 signupBtn.style.opacity = '0.7';
 
+                showLoader('Sending Verification Code...');
                 try {
                     const res = await fetch(`${API_URL}/auth/send-otp`, {
                         method: 'POST',
@@ -3054,6 +3163,7 @@
                 } finally {
                     signupBtn.disabled = false;
                     signupBtn.style.opacity = '1';
+                    hideLoader();
                 }
                 return;
             }
@@ -3062,6 +3172,7 @@
             const otp = document.getElementById('signupOtp').value;
             if (!otp || otp.length !== 6) return showNotification('6-digit code required.');
 
+            showLoader('Verifying Code...');
             try {
                 const res = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
@@ -3087,6 +3198,8 @@
                 }
             } catch (e) {
                 showNotification('Server connection error.');
+            } finally {
+                hideLoader();
             }
         }
 
@@ -3097,6 +3210,7 @@
         }
 
         async function fetchProducts() {
+            showLoader('Waking up server... This may take up to 45s initially');
             try {
                 const response = await fetch(`${API_URL}/products`);
                 if (!response.ok) throw new Error();
@@ -3107,6 +3221,8 @@
                 document.getElementById('allLoading').style.display = 'none';
             } catch (error) {
                 console.error('API Error');
+            } finally {
+                hideLoader();
             }
         }
 
@@ -3276,7 +3392,10 @@ ${qty > 0 ? `
 
     <!-- Offers -->
     <div class="pd-offers">
-      <div class="pd-offers-title">🏷️ Available Offers</div>
+      <div class="pd-offers-title">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Available Offers
+      </div>
       <div class="pd-offer-item"><span class="pd-offer-tag">BANK</span>10% instant discount with HDFC Credit Card</div>
       <div class="pd-offer-item"><span class="pd-offer-tag">CODE</span>Use code <b>GWEN15</b> for extra 15% off</div>
       <div class="pd-offer-item"><span class="pd-offer-tag">EMI</span>No-cost EMI available from ₹${Math.round(product.price / 6)}/month</div>
@@ -3285,28 +3404,45 @@ ${qty > 0 ? `
     <!-- Trust Badges -->
     <div class="pd-trust">
       <div class="pd-trust-item">
-        <span class="pd-trust-icon">🔄</span>
-        <div><span class="pd-trust-label">7 Day Returns</span><span class="pd-trust-sub">Easy returns & refunds</span></div>
+        <span class="pd-trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+        </span>
+        <div><span class="pd-trust-label">7 Day Returns</span><span class="pd-trust-sub">Easy returns &amp; refunds</span></div>
       </div>
       <div class="pd-trust-item">
-        <span class="pd-trust-icon">🚚</span>
+        <span class="pd-trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </span>
         <div><span class="pd-trust-label">Free Delivery</span><span class="pd-trust-sub">On orders above ₹499</span></div>
       </div>
       <div class="pd-trust-item">
-        <span class="pd-trust-icon">✅</span>
+        <span class="pd-trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </span>
         <div><span class="pd-trust-label">100% Genuine</span><span class="pd-trust-sub">Verified authentic product</span></div>
       </div>
       <div class="pd-trust-item">
-        <span class="pd-trust-icon">💳</span>
-        <div><span class="pd-trust-label">Secure Payment</span><span class="pd-trust-sub">UPI, Cards & COD</span></div>
+        <span class="pd-trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </span>
+        <div><span class="pd-trust-label">Secure Payment</span><span class="pd-trust-sub">UPI, Cards &amp; COD</span></div>
       </div>
     </div>
 
     <!-- Delivery estimate -->
     <div class="pd-delivery">
-      <div class="pd-delivery-row"><span class="pd-delivery-icon">📦</span><span>Estimated Delivery: <b>${getDeliveryDate()}</b></span></div>
-      <div class="pd-delivery-row"><span class="pd-delivery-icon">🏠</span><span>Cash on Delivery Available</span></div>
-      <div class="pd-delivery-row"><span class="pd-delivery-icon">🏪</span><span>Sold by <b>Gwen Beauty Studio</b></span></div>
+      <div class="pd-delivery-row">
+        <span class="pd-delivery-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3M16 18h2a2 2 0 0 0 2-2v-4l-3-4H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
+        <span>Estimated Delivery: <b>${getDeliveryDate()}</b></span>
+      </div>
+      <div class="pd-delivery-row">
+        <span class="pd-delivery-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
+        <span>Cash on Delivery Available</span>
+      </div>
+      <div class="pd-delivery-row">
+        <span class="pd-delivery-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+        <span>Sold by <b>Gwen Beauty Studio</b></span>
+      </div>
     </div>
 
     <!-- Add to Cart / Qty -->
@@ -3319,8 +3455,14 @@ ${qty > 0 ? `
       </div>
       <button class="pd-btn-buy" onclick="buyNow('${id}')">&#9889; Buy Now</button>
       ` : `
-      <button class="pd-btn-cart" onclick="quickAddToCart('${id}');showProductDetail('${id}')">&#128717; Add to Bag</button>
-      <button class="pd-btn-buy" onclick="buyNow('${id}')">&#9889; Buy Now</button>
+      <button class="pd-btn-cart" onclick="quickAddToCart('${id}');showProductDetail('${id}')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        Add to Bag
+      </button>
+      <button class="pd-btn-buy" onclick="buyNow('${id}')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        Buy Now
+      </button>
       `}
       <button class="pd-btn-wish ${isWishlisted(id) ? 'wishlisted' : ''}" title="Wishlist" onclick="toggleWishlist('${id}');showProductDetail('${id}')" style="${isWishlisted(id) ? 'color:#e91e63;border-color:#e91e63;' : ''}">${isWishlisted(id) ? '&#9829;' : '&#9825;'}</button>
     </div>
@@ -3508,6 +3650,7 @@ ${qty > 0 ? `
             if (!title) return showNotification('Please add a review title.');
             if (!comment) return showNotification('Please write your review.');
 
+            showLoader('Submitting Review...');
             try {
                 const res = await fetch(`${API_URL}/reviews/${productId}`, {
                     method: 'POST',
@@ -3519,6 +3662,8 @@ ${qty > 0 ? `
                 if (res.ok) loadReviews(productId);
             } catch {
                 showNotification('Error submitting review.');
+            } finally {
+                hideLoader();
             }
         }
 
@@ -3748,6 +3893,7 @@ ${qty > 0 ? `
             confirmBtn.disabled = true;
             confirmBtn.textContent = 'Processing…';
 
+            showLoader('Processing Payment...');
             try {
                 const res = await fetch(`${API_URL}/orders`, {
                     method: 'POST',
@@ -3776,6 +3922,7 @@ ${qty > 0 ? `
             } catch (e) {
                 showNotification('Order Error: ' + e.message);
             } finally {
+                hideLoader();
                 confirmBtn.disabled = false;
                 confirmBtn.textContent = '&#128274; Confirm & Pay';
             }
@@ -3794,6 +3941,7 @@ ${qty > 0 ? `
             btn.disabled = true;
             btn.textContent = 'Sending…';
 
+            showLoader('Sending Inquiry...');
             try {
                 const res = await fetch(`${API_URL}/contact`, {
                     method: 'POST',
@@ -3810,6 +3958,7 @@ ${qty > 0 ? `
             } catch (e) {
                 showNotification('Connection error. Please try again.');
             } finally {
+                hideLoader();
                 btn.disabled = false;
                 btn.textContent = 'Send Inquiry';
             }
