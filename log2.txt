@@ -1,0 +1,107 @@
+﻿commit 2ec5781efa0bd1ae78ace98537d47be7c7efa1b6
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 21:04:30 2026 +0530
+
+    Configure Vercel deployment for frontend and backend
+
+commit dedc4214f66029deb56ec9eedaa9383bb2cacf85
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 16:15:10 2026 +0530
+
+    Fix Vercel SPA rewrite rule to ignore static asset files containing dots
+
+commit 31571ed990a3b2440bf0d952a6ebbe8ce3a6a65b
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 16:12:08 2026 +0530
+
+    Fix CORS for Vercel deployment and correct asset path resolution for SPA rewrite rules
+
+commit 6b60b7dd8cccf868f584458a7b566b50288e4f9e
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 16:05:22 2026 +0530
+
+    Add Vercel configuration for SPA routing
+
+commit 912eb3a60bdfccf001e59f8800a14542e46386bc
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 15:58:53 2026 +0530
+
+    Implement strict authentication checks and browser History API for admin panel navigation
+
+commit 51be830b05ef3787537dfa36410295f58f274c0c
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 15:54:07 2026 +0530
+
+    Implement browser History API for SPA navigation
+
+commit ca61c87fcd6424ffb09d8045d1875931d0eac102
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 14:49:16 2026 +0530
+
+    Invert add to cart button styles, add fallback OTP feature
+
+commit 250f92079768d5fead0792392cbadfe2a9de898e
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 13:50:17 2026 +0530
+
+    Auto-fill OTP on connection timeout
+
+commit d8f9cf4e8d28a7fbf5d84e501bdd1b67018d16b7
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 13:21:55 2026 +0530
+
+    Fix Render SMTP timeout with explicit host and port 465
+
+commit ec9479c2fdcbc390e3e6d7fefdfbc1d69c599ce8
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 12:21:44 2026 +0530
+
+    Add loading state to signup OTP dispatch
+
+commit 63ba45cdba05501ba6c4eb694edac22ec584418e
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 12:02:23 2026 +0530
+
+    Fix set userToken on successful account creation
+
+commit e502bf8ee497aea15bb8eef89bf8d11bdd4ee637
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 11:36:52 2026 +0530
+
+    Update index.html
+
+commit 93fda14ece0c092e6095eefbd1d3c410ee4d4046
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 11:32:29 2026 +0530
+
+    logo update
+
+commit 0a9be43298ace62077338196923bb0cb8c23b917
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 11:25:22 2026 +0530
+
+    Add favicon and navbar logo
+
+commit b5cacde2ab162ccba9b71e473967d6beb938a46b
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 11:02:54 2026 +0530
+
+    Fix UI alignments for cards, undefined price and featured items fallback
+
+commit 1d04ed03a63046ddebc511a467c39660c4a4cd89
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 10:53:12 2026 +0530
+
+    Fix req.userId mapping and adminAuth 401 response
+
+commit dc93a30b43f49780db05662d4d1e005e47806e2d
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Tue Mar 10 10:14:03 2026 +0530
+
+    Fix CORS Netlify missing origin & LiveServer ports
+
+commit a20a2c0c35e80f549a5315690e771706f03ed7f9
+Author: Prabhu G <prabhuak2446@gmail.com>
+Date:   Mon Mar 9 20:44:47 2026 +0530
+
+    gwen

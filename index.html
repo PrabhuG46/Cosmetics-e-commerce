@@ -2155,6 +2155,29 @@
                         <button class="submit-btn" style="flex:1;" onclick="saveProfile()">Save Changes</button>
                     </div>
                 </div>
+
+                <!-- Orders Section -->
+                <div class="card" id="profileOrdersCard" style="margin-top: 2rem;">
+                    <div style="border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem;">
+                        <h3 style="margin:0;">My Orders</h3>
+                    </div>
+                    <div id="profileOrdersList" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Orders populated by JS -->
+                        <p style="color:var(--text-muted); font-style:italic;">Loading orders...</p>
+                    </div>
+                </div>
+
+                <!-- Wishlist Section -->
+                <div class="card" id="profileWishlistCard" style="margin-top: 2rem;">
+                    <div style="border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin:0;">My Wishlist</h3>
+                        <button onclick="moveAllToCart()" style="background:none; border:1px solid var(--border); padding:0.5rem 1.2rem; cursor:pointer; font-size:0.75rem; letter-spacing:1px; text-transform:uppercase;">Move All to Bag</button>
+                    </div>
+                    <div id="profileWishlistGrid" class="products-grid" style="margin-bottom: 0;">
+                        <!-- Products populated by JS -->
+                        <p style="color:var(--text-muted); font-style:italic;">Loading wishlist...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -2495,7 +2518,7 @@
         // ── Wishlist ────────────────────────────────
         function isWishlisted(id) { return wishlist.includes(id); }
 
-        function toggleWishlist(id, event) {
+        async function toggleWishlist(id, event) {
             if (event) event.stopPropagation();
             const idx = wishlist.indexOf(id);
             if (idx === -1) {
@@ -2509,6 +2532,22 @@
             updateWishlistBadge();
             updateWishlistUI();
             refreshGrids(); // refresh heart states on cards
+
+            const token = localStorage.getItem('userToken');
+            if (token) {
+                try {
+                    await fetch(`${API_URL}/auth/wishlist/toggle`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        },
+                        body: JSON.stringify({ productId: id })
+                    });
+                } catch (e) {
+                    console.error('Failed to sync wishlist with server');
+                }
+            }
         }
 
         function updateWishlistBadge() {
@@ -2654,8 +2693,36 @@
             showPage(pageName, false);
         });
 
-        function populateProfile() {
-            const user = JSON.parse(localStorage.getItem('user'));
+        async function populateProfile() {
+            const token = localStorage.getItem('userToken');
+            let user = JSON.parse(localStorage.getItem('user'));
+            if (!user && !token) return showPage('auth');
+            
+            // If token is available, fetch latest full profile
+            if (token) {
+                try {
+                    const res = await fetch(`${API_URL}/auth/profile`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        user = data;
+                        localStorage.setItem('user', JSON.stringify(user));
+
+                        // Sync frontend wishlist with backend wishlist state if populated
+                        if (user.wishlist && Array.isArray(user.wishlist)) {
+                            wishlist = user.wishlist.map(p => typeof p === 'object' ? p._id : p);
+                            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                            updateWishlistBadge();
+                            updateWishlistUI();
+                            refreshGrids();
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch full profile");
+                }
+            }
+
             if (!user) return;
             document.getElementById('profileWelcome').textContent = `Hello, ${user.name.split(' ')[0]}`;
             document.getElementById('profileName').textContent = user.name;
@@ -2671,6 +2738,74 @@
                 const parts = [addr.street, addr.city, addr.state, addr.pincode].filter(Boolean);
                 document.getElementById('profileAddress').textContent = parts.join(', ') || 'Address not provided';
             }
+
+            renderProfileOrders(user.orders || []);
+            renderProfileWishlist(user.wishlist || []);
+        }
+
+        function renderProfileOrders(orders) {
+            const container = document.getElementById('profileOrdersList');
+            if (!orders || orders.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-style:italic;">You have no orders yet.</p>';
+                return;
+            }
+            container.innerHTML = orders.map(order => {
+                const d = new Date(order.createdAt);
+                
+                // Estimate delivery info
+                let estDeliveryDate = new Date(order.createdAt);
+                estDeliveryDate.setDate(estDeliveryDate.getDate() + 3);
+                
+                let orderStatusColor = 'var(--text-muted)';
+                if (order.orderStatus === 'Delivered') orderStatusColor = '#2e7d32';
+                else if (order.orderStatus === 'Shipped') orderStatusColor = '#1976d2';
+
+                return `
+                <div style="border:1px solid var(--border); padding:1.5rem; display:flex; flex-direction:column; gap:1rem;">
+                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; border-bottom:1px solid var(--border); padding-bottom:1rem;">
+                        <div>
+                            <div style="font-weight:600; font-size:1.1rem;">Order #${order._id.substring(order._id.length - 8).toUpperCase()}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Placed on ${d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-weight:600; color:${orderStatusColor}; background: #fdfaf6; padding: 4px 10px; border-radius: 4px; display:inline-block; font-size: 0.85rem; border: 1px solid ${orderStatusColor}22;">${order.orderStatus || 'Pending'}</div>
+                            <div style="font-weight:600; font-size:1.1rem; margin-top:8px;">&#8377;${order.totalAmount}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:0.5rem; overflow-x: auto; padding-bottom: 0.5rem;">
+                        ${order.products.map(p => `
+                            <div style="display:flex; gap:1rem; align-items:center; min-width: 250px;">
+                                <img src="${p.image}" style="width:50px; height:50px; object-fit:cover; border:1px solid var(--border);">
+                                <div>
+                                    <div style="font-size:0.9rem;">${p.name}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">Qty: ${p.quantity} | Size: ${p.size || 'M'}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="background:#f9f9f9; padding:10px; font-size:0.8rem; color:var(--text-muted);">
+                        💳 ${order.paymentMethod} • 🚚 Expected Delivery: ${estDeliveryDate.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short' })}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderProfileWishlist(wishlistItems) {
+            const container = document.getElementById('profileWishlistGrid');
+            if (!wishlistItems || wishlistItems.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-style:italic;">Your wishlist is empty. Explore products to save your favorites.</p>';
+                container.style.display = 'block'; // Turn off grid displaying if empty
+                return;
+            }
+            container.style.display = 'grid'; // Grid class normally handles this, but ensures it
+            container.innerHTML = wishlistItems.map((p, i) => {
+                if(typeof p === 'string') {
+                     // Could just be an ID if not populated, which we can look up from global products list
+                    p = products.find(x => x._id === p);
+                    if(!p) return '';
+                }
+                return createProductCard(p, i);
+            }).join('');
         }
 
         function toggleEditProfile() {

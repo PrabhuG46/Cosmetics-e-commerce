@@ -21,6 +21,9 @@ router.get("/profile", auth, authController.getProfile);
 // Update Profile (Protected)
 router.put("/profile", auth, authController.updateProfile);
 
+// Toggle Wishlist (Protected)
+router.post("/wishlist/toggle", auth, authController.toggleWishlist);
+
 // Forgot Password — send OTP to registered email
 router.post("/forgot-password", authController.forgotPassword);
 

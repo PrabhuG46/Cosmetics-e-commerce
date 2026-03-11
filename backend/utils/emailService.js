@@ -1,53 +1,11 @@
 // backend/utils/emailService.js
-// Sends OTP via email using Nodemailer + Gmail SMTP
+// Sends OTP via email using Resend
 
-const nodemailer = require("nodemailer");
+require('dotenv').config();
+const { Resend } = require('resend');
 
-// Create reusable transporter
-let transporter = null;
-
-function getTransporter() {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      tls: {
-          rejectUnauthorized: false
-      },
-      connectionTimeout: 5000 // 5 seconds max (Render timeout fix)
-    });
-
-    // Verify credentials immediately so errors surface at startup
-    transporter.verify((error) => {
-      if (error) {
-        console.error("\n❌ Gmail SMTP Credentials FAILED:");
-        console.error("   Error   :", error.message);
-        console.error("   Sender  :", process.env.EMAIL_USER);
-        console.error("\n   📋 Fix Checklist:");
-        console.error(
-          "   1. Make sure EMAIL_USER is a valid @gmail.com address",
-        );
-        console.error(
-          "   2. EMAIL_PASS must be a 16-char App Password (NOT your Gmail login password)",
-        );
-        console.error("   3. Generate at: myaccount.google.com/apppasswords");
-        console.error(
-          "   4. 2-Step Verification must be enabled on that Google account\n",
-        );
-      } else {
-        console.log(
-          `✅ Gmail SMTP ready — sending from: ${process.env.EMAIL_USER}`,
-        );
-      }
-    });
-  }
-  return transporter;
-}
+// Initialize Resend with the provided API key
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * Send OTP via email
@@ -57,10 +15,8 @@ function getTransporter() {
  */
 async function sendOTPEmail(email, otp) {
   try {
-    const transport = getTransporter();
-
-    const mailOptions = {
-      from: `"Gwen Beauty Studio" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: 'Gwen Beauty Studio <onboarding@resend.dev>',
       to: email,
       subject: `${otp} is your Gwen Beauty OTP`,
       html: `
@@ -94,18 +50,21 @@ async function sendOTPEmail(email, otp) {
                     </div>
                 </div>
             `,
-    };
+    });
 
-    const info = await transport.sendMail(mailOptions);
-    console.log(
-      `✅ OTP email sent to ${email} — Message ID: ${info.messageId}`,
-    );
+    if (error) {
+      console.error("❌ Email OTP Error from Resend:", error);
+      return false;
+    }
+
+    console.log(`✅ OTP email sent to ${email} — Message ID: ${data.id}`);
     return true;
   } catch (error) {
-    console.error("❌ Email OTP Error:", error.message);
+    console.error("❌ Email OTP Catch Error:", error.message);
     return false;
   }
 }
+
 /**
  * Send Contact Form inquiry email to studio owner
  * @param {string} senderName  - Customer full name
@@ -115,10 +74,8 @@ async function sendOTPEmail(email, otp) {
  */
 async function sendContactEmail(senderName, senderEmail, message) {
   try {
-    const transport = getTransporter();
-
-    const mailOptions = {
-      from: `"Gwen Beauty Studio" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: 'Gwen Beauty Studio Contact <onboarding@resend.dev>',
       to: 'prabhuak2446@gmail.com',
       replyTo: senderEmail,
       subject: `New Inquiry from ${senderName} — Gwen Beauty Studio`,
@@ -156,13 +113,17 @@ async function sendContactEmail(senderName, senderEmail, message) {
           </div>
         </div>
       `,
-    };
+    });
 
-    const info = await transport.sendMail(mailOptions);
-    console.log(`✅ Contact inquiry from ${senderName} (${senderEmail}) delivered — ID: ${info.messageId}`);
+    if (error) {
+      console.error('❌ Contact Email Error from Resend:', error);
+      return false;
+    }
+
+    console.log(`✅ Contact inquiry from ${senderName} (${senderEmail}) delivered — ID: ${data.id}`);
     return true;
   } catch (error) {
-    console.error('❌ Contact Email Error:', error.message);
+    console.error('❌ Contact Email Catch Error:', error.message);
     return false;
   }
 }
