@@ -95,12 +95,11 @@
             font-family: 'Cormorant Garamond', serif;
             font-weight: 400;
         }
-
         /* Header */
         .header {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: saturate(180%) blur(20px);
-            padding: 1rem 5%;
+            padding: 0.8rem 5%;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -116,6 +115,55 @@
             align-items: center;
         }
 
+        /* Mobile search bar row — hidden by default, shown on mobile */
+        .mobile-search-row {
+            display: none;
+            padding: 0.5rem 4% 0.65rem;
+            background: rgba(255,255,255,0.95);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-search-inner {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #f5f4f2;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .mobile-search-inner svg {
+            position: absolute;
+            left: 12px;
+            width: 15px;
+            height: 15px;
+            stroke: var(--text-muted);
+            stroke-width: 1.5;
+            fill: none;
+            flex-shrink: 0;
+        }
+
+        .mobile-search-inner input {
+            width: 100%;
+            border: none;
+            outline: none;
+            padding: 0.65rem 2.2rem 0.65rem 2.4rem;
+            font-family: inherit;
+            font-size: 0.85rem;
+            background: transparent;
+            color: var(--text-main);
+        }
+
+        .mobile-search-clear {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0 12px;
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1;
+        }
         .logo {
             font-size: 1.5rem;
             letter-spacing: 2px;
@@ -1516,8 +1564,23 @@
                 display: block;
             }
 
+            /* Mobile header layout */
+            .header {
+                padding: 0.6rem 4%;
+            }
+
+            .header-content {
+                position: relative;
+                justify-content: space-between;
+            }
+
             .logo {
-                font-size: 1.2rem;
+                font-size: 0.95rem;
+            }
+
+            /* Show mobile search bar */
+            .mobile-search-row {
+                display: block;
             }
 
             /* Make search overlay taller on mobile for readability */
@@ -1775,49 +1838,28 @@
         <div class="global-loader-spinner"></div>
         <div class="global-loader-text" id="globalLoaderText">Loading...</div>
     </div>
-    <header class="header">
+    <header class="header" id="siteHeader">
         <div class="header-content">
-            <div class="logo" onclick="showPage('home')" style="display: flex; align-items: center; gap: 0.5rem;">
+            <!-- Logo on LEFT always -->
+            <div class="logo" onclick="showPage('home')" style="display: flex; align-items: center; gap: 0.4rem; cursor:pointer;">
                 <img src="./images/logo.png" alt="Gwen Beauty Logo"
-                    style="height: 50px; width: auto; object-fit: contain;">
+                    style="height: 38px; width: auto; object-fit: contain;">
                 Gwen BEAUTY
             </div>
 
+            <!-- Slide-out nav -->
             <ul class="nav-menu" id="navMenu">
                 <button class="menu-close-btn" onclick="toggleMobileMenu()">✕</button>
-                <li onclick="showPage('home')">Home</li>
-                <li onclick="showPage('products')">Shop</li>
-                <li onclick="showPage('about')">About</li>
-                <li onclick="showPage('contact')">Contact</li>
-                <li class="mobile-link" onclick="showPage('profile')">Profile</li>
-                <li class="mobile-link" onclick="toggleCart()">Bag</li>
-                <li class="mobile-link" onclick="toggleMobileMenu(); toggleWishlistSidebar()"
-                    style="display:flex; align-items:center; gap:0.5rem;">
-
-                    Wishlist
-                </li>
-                <!-- Mobile search bar inside nav -->
-                <li class="mobile-link" style="width:85%; padding:0;">
-                    <div
-                        style="position:relative; display:flex; align-items:center; border:1px solid var(--border); border-radius:2px; overflow:hidden;">
-                        <svg style="position:absolute; left:12px; width:16px; height:16px; stroke:var(--text-muted); stroke-width:1.5; fill:none; flex-shrink:0;"
-                            viewBox="0 0 24 24">
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="M21 21l-4.35-4.35" />
-                        </svg>
-                        <input type="text" id="mobileSearchInput" placeholder="Search products…"
-                            oninput="handleSearch(this.value); document.getElementById('searchInput').value=this.value;"
-                            onkeydown="if(event.key==='Enter'){ toggleMobileMenu(); }"
-                            style="width:100%; border:none; outline:none; padding:0.9rem 1rem 0.9rem 2.5rem; font-family:inherit; font-size:0.85rem; background:transparent; color:var(--text-main);">
-                        <button
-                            onclick="document.getElementById('mobileSearchInput').value=''; handleSearch(''); document.getElementById('searchInput').value='';"
-                            style="background:none; border:none; cursor:pointer; padding:0 12px; color:var(--text-muted); font-size:1.1rem; line-height:1;">✕</button>
-                    </div>
-                </li>
+                <li onclick="showPage('products'); toggleMobileMenu()">Shop</li>
+                <li onclick="showPage('about'); toggleMobileMenu()">About</li>
+                <li onclick="showPage('contact'); toggleMobileMenu()">Contact</li>
+                <li class="mobile-link" onclick="toggleMobileMenu(); toggleWishlistSidebar()">Wishlist</li>
+                <li class="mobile-link" onclick="toggleCart(); toggleMobileMenu()">Bag</li>
             </ul>
 
+            <!-- Right side icons -->
             <div class="header-icons">
-                <!-- Search icon -->
+                <!-- Desktop only -->
                 <button class="icon-btn desktop-only" onclick="openSearch()" title="Search">
                     <svg class="icon-svg" viewBox="0 0 24 24">
                         <circle cx="11" cy="11" r="8" />
@@ -1832,39 +1874,58 @@
                 </button>
                 <button class="icon-btn desktop-only" onclick="toggleCart()" title="Bag">
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M6 2L3 6V20C3 20.5 3.5 21 4 21H20C20.5 21 21 20.5 21 20V6L18 2H6Z"
-                            stroke-linecap="round" />
+                        <path d="M6 2L3 6V20C3 20.5 3.5 21 4 21H20C20.5 21 21 20.5 21 20V6L18 2H6Z" stroke-linecap="round" />
                         <path d="M3 6H21" stroke-linecap="round" />
                         <path d="M16 10C16 11.1 15.1 12 14 12H10C8.9 12 8 11.1 8 10" stroke-linecap="round" />
                     </svg>
                     <span class="cart-badge" id="cartBadge">0</span>
                 </button>
-                <!-- Wishlist icon (desktop) -->
-                <button class="icon-btn desktop-only" onclick="toggleWishlistSidebar()" title="Wishlist"
-                    style="position:relative;">
+                <button class="icon-btn desktop-only" onclick="toggleWishlistSidebar()" title="Wishlist" style="position:relative;">
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path
-                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-                            stroke-linecap="round" />
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" />
                     </svg>
                     <span class="cart-badge" id="wishlistBadge">0</span>
                 </button>
-                <!-- Mobile search icon — visible alongside hamburger -->
-                <button class="icon-btn hamburger-btn" onclick="openSearch()" title="Search">
-                    <svg class="icon-svg" viewBox="0 0 24 24">
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="M21 21l-4.35-4.35" />
+
+                <!-- Mobile only: bag + profile + hamburger on RIGHT -->
+                <button class="icon-btn hamburger-btn" onclick="toggleCart()" title="Bag" style="position:relative; padding:6px;">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M6 2L3 6V20C3 20.5 3.5 21 4 21H20C20.5 21 21 20.5 21 20V6L18 2H6Z" stroke-linecap="round" />
+                        <path d="M3 6H21" stroke-linecap="round" />
+                        <path d="M16 10C16 11.1 15.1 12 14 12H10C8.9 12 8 11.1 8 10" stroke-linecap="round" />
+                    </svg>
+                    <span class="cart-badge" id="mobileCartBadge">0</span>
+                </button>
+                <button class="icon-btn hamburger-btn" onclick="showPage('profile')" title="Profile" style="padding:6px;">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M20 21V19C20 17.9 19.1 17 18 17H6C4.9 17 4 17.9 4 19V21" stroke-linecap="round" />
+                        <circle cx="12" cy="7" r="4" stroke-linecap="round" />
                     </svg>
                 </button>
-                <button class="icon-btn hamburger-btn" id="menuToggle" onclick="toggleMobileMenu()">
+                <!-- Hamburger on RIGHT (last icon on mobile) -->
+                <button class="icon-btn hamburger-btn" id="menuToggle" onclick="toggleMobileMenu()" style="padding:6px;">
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M4 8H20M4 16H20" stroke-width="2" stroke-linecap="round" />
                     </svg>
-                    <span class="cart-badge" id="mobileMenuBadge">0</span>
                 </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Search Bar (below header, mobile only) -->
+    <div class="mobile-search-row" id="mobileSearchRow">
+        <div class="mobile-search-inner">
+            <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+            </svg>
+            <input type="text" id="mobileSearchInput" placeholder="Search products…"
+                oninput="handleSearch(this.value); document.getElementById('searchInput').value=this.value;"
+                onkeydown="if(event.key==='Enter'){ this.blur(); }">
+            <button class="mobile-search-clear"
+                onclick="document.getElementById('mobileSearchInput').value=''; handleSearch(''); document.getElementById('searchInput').value='';">✕</button>
+        </div>
+    </div>
 
     <!-- Search Overlay -->
     <div class="search-overlay" id="searchOverlay">
@@ -1902,7 +1963,7 @@
             <div class="container">
                 <h2 class="section-title">The Collection</h2>
                 <div id="searchResultBar" class="search-result-bar" style="display:none;"></div>
-                <div id="allLoading" class="loading">Sourcing gallery...</div>
+                <div id="allLoading" class="loading">Sourcing Your Beauty...</div>
                 <div class="products-grid" id="allProducts"></div>
                 <div id="pagination" class="pagination-container"></div>
             </div>
@@ -3724,7 +3785,8 @@ ${qty > 0 ? `
         function updateCartUI() {
             const count = cart.reduce((s, i) => s + i.quantity, 0);
             document.getElementById('cartBadge').textContent = count;
-            document.getElementById('mobileMenuBadge').textContent = count;
+            const mobileCartBadge = document.getElementById('mobileCartBadge');
+            if (mobileCartBadge) { mobileCartBadge.textContent = count; mobileCartBadge.style.display = count > 0 ? '' : 'none'; }
             const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
             document.getElementById('cartTotalDisplay').textContent = '₹' + total;
 
