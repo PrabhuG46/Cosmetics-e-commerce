@@ -95,6 +95,7 @@
             font-family: 'Cormorant Garamond', serif;
             font-weight: 400;
         }
+
         /* Header */
         .header {
             background: rgba(255, 255, 255, 0.95);
@@ -119,7 +120,7 @@
         .mobile-search-row {
             display: none;
             padding: 0.5rem 4% 0.65rem;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             border-bottom: 1px solid var(--border);
         }
 
@@ -164,6 +165,7 @@
             font-size: 1rem;
             line-height: 1;
         }
+
         .logo {
             font-size: 1.5rem;
             letter-spacing: 2px;
@@ -898,6 +900,7 @@
             height: 32px;
             stroke: var(--text-main);
         }
+
         .pd-trust-icon svg {
             width: 20px;
             height: 20px;
@@ -1035,6 +1038,7 @@
             justify-content: center;
             stroke: var(--text-muted);
         }
+
         .pd-delivery-icon svg {
             width: 15px;
             height: 15px;
@@ -1676,14 +1680,20 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Global Overlay Loader */
         .global-loader {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(250, 249, 246, 0.85); /* Slightly transparent background color */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(250, 249, 246, 0.85);
+            /* Slightly transparent background color */
             backdrop-filter: blur(4px);
             z-index: 9999;
             display: flex;
@@ -1695,7 +1705,7 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
-        
+
         .global-loader.active {
             opacity: 1;
             pointer-events: all;
@@ -1704,12 +1714,14 @@
         .global-loader-spinner {
             width: 45px;
             height: 45px;
-            border: 3px solid #e8e0d8; /* Light border */
-            border-top-color: var(--text-main); /* Dark border for animation */
+            border: 3px solid #e8e0d8;
+            /* Light border */
+            border-top-color: var(--text-main);
+            /* Dark border for animation */
             border-radius: 50%;
             animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
-        
+
         .global-loader-text {
             font-family: 'Inter', sans-serif;
             font-size: 0.85rem;
@@ -1841,7 +1853,8 @@
     <header class="header" id="siteHeader">
         <div class="header-content">
             <!-- Logo on LEFT always -->
-            <div class="logo" onclick="showPage('home')" style="display: flex; align-items: center; gap: 0.4rem; cursor:pointer;">
+            <div class="logo" onclick="showPage('home')"
+                style="display: flex; align-items: center; gap: 0.4rem; cursor:pointer;">
                 <img src="./images/logo.png" alt="Gwen Beauty Logo"
                     style="height: 38px; width: auto; object-fit: contain;">
                 Gwen BEAUTY
@@ -1874,36 +1887,44 @@
                 </button>
                 <button class="icon-btn desktop-only" onclick="toggleCart()" title="Bag">
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M6 2L3 6V20C3 20.5 3.5 21 4 21H20C20.5 21 21 20.5 21 20V6L18 2H6Z" stroke-linecap="round" />
+                        <path d="M6 2L3 6V20C3 20.5 3.5 21 4 21H20C20.5 21 21 20.5 21 20V6L18 2H6Z"
+                            stroke-linecap="round" />
                         <path d="M3 6H21" stroke-linecap="round" />
                         <path d="M16 10C16 11.1 15.1 12 14 12H10C8.9 12 8 11.1 8 10" stroke-linecap="round" />
                     </svg>
                     <span class="cart-badge" id="cartBadge">0</span>
                 </button>
-                <button class="icon-btn desktop-only" onclick="toggleWishlistSidebar()" title="Wishlist" style="position:relative;">
+                <button class="icon-btn desktop-only" onclick="toggleWishlistSidebar()" title="Wishlist"
+                    style="position:relative;">
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" />
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                            stroke-linecap="round" />
                     </svg>
                     <span class="cart-badge" id="wishlistBadge">0</span>
                 </button>
 
                 <!-- Mobile only: bag + profile + hamburger on RIGHT -->
-                <button class="icon-btn hamburger-btn" onclick="toggleCart()" title="Bag" style="position:relative; padding:6px;">
+                <button class="icon-btn hamburger-btn" onclick="toggleCart()" title="Bag"
+                    style="position:relative; padding:6px;">
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M6 2L3 6V20C3 20.5 3.5 21 4 21H20C20.5 21 21 20.5 21 20V6L18 2H6Z" stroke-linecap="round" />
+                        <path d="M6 2L3 6V20C3 20.5 3.5 21 4 21H20C20.5 21 21 20.5 21 20V6L18 2H6Z"
+                            stroke-linecap="round" />
                         <path d="M3 6H21" stroke-linecap="round" />
                         <path d="M16 10C16 11.1 15.1 12 14 12H10C8.9 12 8 11.1 8 10" stroke-linecap="round" />
                     </svg>
                     <span class="cart-badge" id="mobileCartBadge">0</span>
                 </button>
-                <button class="icon-btn hamburger-btn" onclick="showPage('profile')" title="Profile" style="padding:6px;">
+                <button class="icon-btn hamburger-btn" onclick="showPage('profile')" title="Profile"
+                    style="padding:6px;">
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M20 21V19C20 17.9 19.1 17 18 17H6C4.9 17 4 17.9 4 19V21" stroke-linecap="round" />
                         <circle cx="12" cy="7" r="4" stroke-linecap="round" />
                     </svg>
                 </button>
                 <!-- Hamburger on RIGHT (last icon on mobile) -->
-                <button class="icon-btn hamburger-btn" id="menuToggle" onclick="toggleMobileMenu()" style="padding:6px;">
+                <button class="icon-btn hamburger-btn" id="menuToggle" onclick="toggleMobileMenu()"
+                    style="padding:6px;">
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M4 8H20M4 16H20" stroke-width="2" stroke-linecap="round" />
                     </svg>
@@ -2096,7 +2117,7 @@
                         <div id="fpStep2" class="hidden">
                             <div class="form-group">
                                 <label>Verification Code</label>
-                                <input type="text" id="fpOtp" placeholder="6-digit code from email" maxlength="6"
+                                <input type="text" id="fpOtp" placeholder="6 random words"
                                     onkeydown="if(event.key==='Enter') document.getElementById('fpNewPass').focus()">
                             </div>
                             <div class="form-group">
@@ -2187,12 +2208,12 @@
                         <div id="signupOtpStep" class="hidden">
                             <div class="form-group">
                                 <label>Email Verification Code</label>
-                                <input type="text" id="signupOtp" placeholder="Enter 6-digit code" maxlength="6"
+                                <input type="text" id="signupOtp" placeholder="Enter 6 random words"
                                     onkeydown="if(event.key==='Enter') handleSignup()">
                             </div>
                             <p
                                 style="text-align: center; margin-bottom: 2rem; font-size: 0.75rem; color: var(--text-muted);">
-                                We've sent a secure code to your email address.</p>
+                                Enter the 6 random words above to verify your request.</p>
                         </div>
 
                         <label class="checkbox-group" id="consentLabel">
@@ -2312,9 +2333,12 @@
 
                 <!-- Wishlist Section -->
                 <div class="card" id="profileWishlistCard" style="margin-top: 2rem;">
-                    <div style="border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div
+                        style="border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem; display: flex; justify-content: space-between; align-items: center;">
                         <h3 style="margin:0;">My Wishlist</h3>
-                        <button onclick="moveAllToCart()" style="background:none; border:1px solid var(--border); padding:0.5rem 1.2rem; cursor:pointer; font-size:0.75rem; letter-spacing:1px; text-transform:uppercase;">Move All to Bag</button>
+                        <button onclick="moveAllToCart()"
+                            style="background:none; border:1px solid var(--border); padding:0.5rem 1.2rem; cursor:pointer; font-size:0.75rem; letter-spacing:1px; text-transform:uppercase;">Move
+                            All to Bag</button>
                     </div>
                     <div id="profileWishlistGrid" class="products-grid" style="margin-bottom: 0;">
                         <!-- Products populated by JS -->
@@ -2694,9 +2718,9 @@
                 try {
                     await fetch(`${API_URL}/auth/wishlist/toggle`, {
                         method: 'POST',
-                        headers: { 
+                        headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}` 
+                            'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({ productId: id })
                     });
@@ -2853,7 +2877,7 @@
             const token = localStorage.getItem('userToken');
             let user = JSON.parse(localStorage.getItem('user'));
             if (!user && !token) return showPage('auth');
-            
+
             // If token is available, fetch latest full profile
             if (token) {
                 try {
@@ -2907,11 +2931,11 @@
             }
             container.innerHTML = orders.map(order => {
                 const d = new Date(order.createdAt);
-                
+
                 // Estimate delivery info
                 let estDeliveryDate = new Date(order.createdAt);
                 estDeliveryDate.setDate(estDeliveryDate.getDate() + 3);
-                
+
                 let orderStatusColor = 'var(--text-muted)';
                 if (order.orderStatus === 'Delivered') orderStatusColor = '#2e7d32';
                 else if (order.orderStatus === 'Shipped') orderStatusColor = '#1976d2';
@@ -2921,7 +2945,7 @@
                     <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; border-bottom:1px solid var(--border); padding-bottom:1rem;">
                         <div>
                             <div style="font-weight:600; font-size:1.1rem;">Order #${order._id.substring(order._id.length - 8).toUpperCase()}</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Placed on ${d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Placed on ${d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
                         </div>
                         <div style="text-align:right;">
                             <div style="font-weight:600; color:${orderStatusColor}; background: #fdfaf6; padding: 4px 10px; border-radius: 4px; display:inline-block; font-size: 0.85rem; border: 1px solid ${orderStatusColor}22;">${order.orderStatus || 'Pending'}</div>
@@ -2940,7 +2964,7 @@
                         `).join('')}
                     </div>
                     <div style="background:#f9f9f9; padding:10px; font-size:0.8rem; color:var(--text-muted);">
-                        💳 ${order.paymentMethod} • 🚚 Expected Delivery: ${estDeliveryDate.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short' })}
+                        💳 ${order.paymentMethod} • 🚚 Expected Delivery: ${estDeliveryDate.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
                     </div>
                 </div>`;
             }).join('');
@@ -2955,10 +2979,10 @@
             }
             container.style.display = 'grid'; // Grid class normally handles this, but ensures it
             container.innerHTML = wishlistItems.map((p, i) => {
-                if(typeof p === 'string') {
-                     // Could just be an ID if not populated, which we can look up from global products list
+                if (typeof p === 'string') {
+                    // Could just be an ID if not populated, which we can look up from global products list
                     p = products.find(x => x._id === p);
-                    if(!p) return '';
+                    if (!p) return '';
                 }
                 return createProductCard(p, i);
             }).join('');
@@ -3082,7 +3106,7 @@
         async function handleForgotSendOTP() {
             const email = document.getElementById('fpEmail').value.trim();
             if (!email || !email.includes('@')) return showNotification('Enter a valid email address.');
-            
+
             showLoader('Sending Reset Code...');
             try {
                 const res = await fetch(`${API_URL}/auth/forgot-password`, {
@@ -3095,11 +3119,11 @@
                     document.getElementById('fpStep1').classList.add('hidden');
                     document.getElementById('fpStep2').classList.remove('hidden');
 
-                    // If email delivery failed (Render firewall), auto-fill OTP
+                    // If random words provided, auto-fill
                     if (data.fallbackOtp) {
                         const fpOtpInput = document.getElementById('fpOtp');
                         if (fpOtpInput) fpOtpInput.value = data.fallbackOtp;
-                        showNotification(`⚠️ Email blocked by server. Your reset code is: ${data.fallbackOtp} (auto-filled)`, 8000);
+                        showNotification(`Your 6 random words are: ${data.fallbackOtp} (auto-filled)`, 8000);
                     } else {
                         showNotification(data.message);
                     }
@@ -3119,7 +3143,7 @@
             const newPass = document.getElementById('fpNewPass').value;
             const confirmPass = document.getElementById('fpConfirmPass').value;
 
-            if (!otp || otp.length !== 6) return showNotification('Enter the 6-digit code from your email.');
+            if (!otp || otp.trim().split(/\s+/).length !== 6) return showNotification('Enter the 6 random words.');
             if (!newPass || newPass.length < 6) return showNotification('Password must be at least 6 characters.');
             if (newPass !== confirmPass) return showNotification('Passwords do not match.');
 
@@ -3221,11 +3245,11 @@
                         otpStep.classList.remove('hidden');
                         signupBtn.textContent = 'Verify & Create Account';
 
-                        // If email delivery failed (Render firewall), auto-fill OTP and show prominent notice
+                        // Auto-fill random words
                         if (data.fallbackOtp) {
                             const otpInput = document.getElementById('signupOtp');
                             if (otpInput) otpInput.value = data.fallbackOtp;
-                            showNotification(`⚠️ Email blocked by server. Your code is: ${data.fallbackOtp} (auto-filled below)`, 8000);
+                            showNotification(`Your 6 random words are: ${data.fallbackOtp} (auto-filled below)`, 8000);
                         } else {
                             showNotification(data.message);
                         }
@@ -3246,7 +3270,7 @@
 
             // Step 2: Verify OTP and Register
             const otp = document.getElementById('signupOtp').value;
-            if (!otp || otp.length !== 6) return showNotification('6-digit code required.');
+            if (!otp || otp.trim().split(/\s+/).length !== 6) return showNotification('6 random words required.');
 
             showLoader('Verifying Code...');
             try {

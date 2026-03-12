@@ -2,8 +2,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { sendOTPEmail } = require('../utils/emailService');
 
+const WORD_LIST = ["apple", "banana", "orange", "grape", "mango", "peach", "plum", "kiwi", "melon", "berry", "cherry", "lemon", "lime", "fig", "date", "ocean", "river", "mountain", "forest", "desert", "cloud", "rain", "snow", "wind", "storm", "star", "moon", "sun", "planet", "galaxy", "lion", "tiger", "bear", "wolf", "fox", "deer", "eagle", "hawk", "owl", "dove", "fish", "shark", "whale", "dolphin", "seal", "ruby", "jade", "pearl", "opal", "coral", "gold", "silver", "bronze", "iron", "steel", "happy", "brave", "calm", "eager", "proud", "swift", "clever", "wise", "bold", "kind", "red", "blue", "green", "yellow", "purple", "white", "black", "gray", "brown", "pink", "run", "jump", "swim", "fly", "walk", "dance", "sing", "read", "write", "draw", "play", "work", "sleep", "dream", "wake"];
 // Store OTPs temporarily — keyed by EMAIL (in production, use Redis)
 const otpStore = new Map();
 
@@ -19,18 +19,18 @@ exports.register = async (req, res) => {
 
         // Verify OTP (keyed by email)
         if (!otp) {
-            return res.status(400).json({ message: 'OTP is required for registration' });
+            return res.status(400).json({ message: 'Words are required for registration' });
         }
         const storedOTP = otpStore.get(email);
         if (!storedOTP) {
-            return res.status(400).json({ message: 'OTP not found or expired. Please resend.' });
+            return res.status(400).json({ message: 'Words not found or expired. Please resend.' });
         }
         if (Date.now() > storedOTP.expiresAt) {
             otpStore.delete(email);
-            return res.status(400).json({ message: 'OTP has expired. Please resend.' });
+            return res.status(400).json({ message: 'Words have expired. Please resend.' });
         }
         if (storedOTP.otp !== otp) {
-            return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+            return res.status(400).json({ message: 'Invalid words. Please try again.' });
         }
         otpStore.delete(email); // Clear after successful verification
 
@@ -93,30 +93,21 @@ exports.sendOTP = async (req, res) => {
             return res.status(400).json({ message: 'Valid email address required' });
         }
 
-        // Generate 6-digit OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        // Generate 6 random words
+        const words = Array.from({length: 6}, () => WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)]).join(' ');
 
         // Store OTP keyed by email (expires in 5 minutes)
         otpStore.set(email, {
-            otp,
+            otp: words,
             expiresAt: Date.now() + 5 * 60 * 1000
         });
 
         // Always log to terminal for debugging
-        console.log(`OTP for ${email}: ${otp}`);
-
-        // Send OTP email via nodemailer
-        const emailSent = await sendOTPEmail(email, otp);
-
-        if (!emailSent) {
-            console.warn(`⚠️  Email delivery failed for ${email}. OTP is in terminal above.`);
-        }
+        console.log(`Secret Words for ${email}: ${words}`);
 
         res.json({
-            message: emailSent
-                ? `OTP sent to ${email}`
-                : `Render strict firewall blocked email. Use code: ${otp}`,
-            fallbackOtp: emailSent ? null : otp
+            message: `Secret words generated successfully.`,
+            fallbackOtp: words
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -338,16 +329,13 @@ exports.forgotPassword = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'No account found with this email address' });
         }
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const words = Array.from({length: 6}, () => WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)]).join(' ');
         const storeKey = `reset:${email}`;
-        otpStore.set(storeKey, { otp, expiresAt: Date.now() + 5 * 60 * 1000 });
-        console.log(`Password Reset OTP for ${email}: ${otp}`);
-        const emailSent = await sendOTPEmail(email, otp);
+        otpStore.set(storeKey, { otp: words, expiresAt: Date.now() + 5 * 60 * 1000 });
+        console.log(`Password Reset Words for ${email}: ${words}`);
         res.json({
-            message: emailSent
-                ? `Password reset OTP sent to ${email}`
-                : `Render strict firewall blocked email. Use code: ${otp}`,
-            fallbackOtp: emailSent ? null : otp
+            message: `Secret words for password reset configured.`,
+            fallbackOtp: words
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -367,14 +355,14 @@ exports.resetPassword = async (req, res) => {
         const storeKey = `reset:${email}`;
         const stored = otpStore.get(storeKey);
         if (!stored) {
-            return res.status(400).json({ message: 'OTP not found or expired. Please request again.' });
+            return res.status(400).json({ message: 'Words not found or expired. Please request again.' });
         }
         if (Date.now() > stored.expiresAt) {
             otpStore.delete(storeKey);
-            return res.status(400).json({ message: 'OTP has expired. Please request again.' });
+            return res.status(400).json({ message: 'Words have expired. Please request again.' });
         }
         if (stored.otp !== otp) {
-            return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+            return res.status(400).json({ message: 'Invalid words. Please try again.' });
         }
         otpStore.delete(storeKey);
         const hashedPassword = await bcrypt.hash(newPassword, 10);
