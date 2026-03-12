@@ -1,14 +1,26 @@
 // backend/utils/emailService.js
-// Sends OTP via email using Resend
+// Sends emails via Nodemailer + Gmail SMTP (works on any host — no firewall issues)
 
 require('dotenv').config();
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-// Initialize Resend with the provided API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Create reusable transporter
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,   // Gmail App Password (16-char, no spaces)
+    },
+});
 
-// Log at startup so you can verify the key is loaded in Render
-console.log(`📧 Resend key loaded: ${process.env.RESEND_API_KEY ? 'YES (' + process.env.RESEND_API_KEY.substring(0, 8) + '...)' : '❌ MISSING'}`);
+// Verify connection at startup
+transporter.verify((error) => {
+    if (error) {
+        console.error('❌ Gmail SMTP connection failed:', error.message);
+    } else {
+        console.log(`✅ Gmail SMTP ready — sending from: ${process.env.EMAIL_USER}`);
+    }
+});
 
 /**
  * Send OTP via email
@@ -17,12 +29,12 @@ console.log(`📧 Resend key loaded: ${process.env.RESEND_API_KEY ? 'YES (' + pr
  * @returns {boolean}     - true if sent successfully
  */
 async function sendOTPEmail(email, otp) {
-  try {
-    const { data, error } = await resend.emails.send({
-      from: 'Gwen Beauty Studio <onboarding@resend.dev>',
-      to: email,
-      subject: `${otp} is your Gwen Beauty OTP`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"Gwen Beauty Studio" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: `${otp} is your Gwen Beauty OTP`,
+            html: `
                 <div style="font-family: 'Georgia', serif; max-width: 520px; margin: 0 auto; color: #2c2c2c;">
                     <div style="background: #2c2c2c; padding: 32px; text-align: center;">
                         <h1 style="color: #f4f0eb; letter-spacing: 4px; font-size: 18px; margin: 0; text-transform: uppercase;">Gwen Beauty Studio</h1>
@@ -53,20 +65,14 @@ async function sendOTPEmail(email, otp) {
                     </div>
                 </div>
             `,
-    });
+        });
 
-    if (error) {
-      console.error("❌ Email OTP Error from Resend:", JSON.stringify(error));
-      console.error("   → statusCode:", error.statusCode, "| name:", error.name, "| message:", error.message);
-      return false;
+        console.log(`✅ OTP email sent to ${email} — Message ID: ${info.messageId}`);
+        return true;
+    } catch (error) {
+        console.error('❌ Email OTP Error (Gmail SMTP):', error.message);
+        return false;
     }
-
-    console.log(`✅ OTP email sent to ${email} — Message ID: ${data.id}`);
-    return true;
-  } catch (error) {
-    console.error("❌ Email OTP Catch Error:", error.message, error.stack);
-    return false;
-  }
 }
 
 /**
@@ -77,60 +83,54 @@ async function sendOTPEmail(email, otp) {
  * @returns {boolean}          - true if sent successfully
  */
 async function sendContactEmail(senderName, senderEmail, message) {
-  try {
-    const { data, error } = await resend.emails.send({
-      from: 'Gwen Beauty Studio Contact <onboarding@resend.dev>',
-      to: 'prabhuak2446@gmail.com',
-      replyTo: senderEmail,
-      subject: `New Inquiry from ${senderName} — Gwen Beauty Studio`,
-      html: `
-        <div style="font-family: 'Georgia', serif; max-width: 560px; margin: 0 auto; color: #2c2c2c;">
-          <div style="background: #2c2c2c; padding: 28px 32px; text-align: center;">
-            <h1 style="color: #f4f0eb; letter-spacing: 4px; font-size: 16px; margin: 0; text-transform: uppercase;">Gwen Beauty Studio</h1>
-            <p style="color: #aaa; margin: 6px 0 0; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">New Contact Inquiry</p>
-          </div>
+    try {
+        const info = await transporter.sendMail({
+            from: `"Gwen Beauty Studio" <${process.env.EMAIL_USER}>`,
+            to: process.env.EMAIL_USER,   // send to yourself (studio owner)
+            replyTo: senderEmail,
+            subject: `New Inquiry from ${senderName} — Gwen Beauty Studio`,
+            html: `
+                <div style="font-family: 'Georgia', serif; max-width: 560px; margin: 0 auto; color: #2c2c2c;">
+                    <div style="background: #2c2c2c; padding: 28px 32px; text-align: center;">
+                        <h1 style="color: #f4f0eb; letter-spacing: 4px; font-size: 16px; margin: 0; text-transform: uppercase;">Gwen Beauty Studio</h1>
+                        <p style="color: #aaa; margin: 6px 0 0; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">New Contact Inquiry</p>
+                    </div>
 
-          <div style="padding: 36px 32px; background: #faf9f6; border: 1px solid #e8e0d8; border-top: none;">
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 28px;">
-              <tr>
-                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; width: 110px;">From</td>
-                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; font-weight: 600;">${senderName}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999;">Email</td>
-                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px;"><a href="mailto:${senderEmail}" style="color: #2c2c2c;">${senderEmail}</a></td>
-              </tr>
-            </table>
+                    <div style="padding: 36px 32px; background: #faf9f6; border: 1px solid #e8e0d8; border-top: none;">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 28px;">
+                            <tr>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; width: 110px;">From</td>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; font-weight: 600;">${senderName}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999;">Email</td>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px;"><a href="mailto:${senderEmail}" style="color: #2c2c2c;">${senderEmail}</a></td>
+                            </tr>
+                        </table>
 
-            <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 10px;">Message</p>
-            <div style="background: #f0ebe4; padding: 20px; border-radius: 2px; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${message}</div>
+                        <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 10px;">Message</p>
+                        <div style="background: #f0ebe4; padding: 20px; border-radius: 2px; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${message}</div>
 
-            <p style="margin-top: 28px; font-size: 13px; color: #aaa; text-align: center;">
-              Hit <strong>Reply</strong> to respond directly to ${senderName}.
-            </p>
-          </div>
+                        <p style="margin-top: 28px; font-size: 13px; color: #aaa; text-align: center;">
+                            Hit <strong>Reply</strong> to respond directly to ${senderName}.
+                        </p>
+                    </div>
 
-          <div style="padding: 18px 32px; text-align: center; background: #f0ebe4;">
-            <p style="font-size: 11px; color: #aaa; margin: 0; letter-spacing: 1px; text-transform: uppercase;">
-              &copy; 2025 Gwen Beauty Studio. All rights reserved.
-            </p>
-          </div>
-        </div>
-      `,
-    });
+                    <div style="padding: 18px 32px; text-align: center; background: #f0ebe4;">
+                        <p style="font-size: 11px; color: #aaa; margin: 0; letter-spacing: 1px; text-transform: uppercase;">
+                            &copy; 2025 Gwen Beauty Studio. All rights reserved.
+                        </p>
+                    </div>
+                </div>
+            `,
+        });
 
-    if (error) {
-      console.error('❌ Contact Email Error from Resend:', JSON.stringify(error));
-      console.error('   → statusCode:', error.statusCode, '| name:', error.name, '| message:', error.message);
-      return false;
+        console.log(`✅ Contact inquiry from ${senderName} (${senderEmail}) delivered — ID: ${info.messageId}`);
+        return true;
+    } catch (error) {
+        console.error('❌ Contact Email Error (Gmail SMTP):', error.message);
+        return false;
     }
-
-    console.log(`✅ Contact inquiry from ${senderName} (${senderEmail}) delivered — ID: ${data.id}`);
-    return true;
-  } catch (error) {
-    console.error('❌ Contact Email Catch Error:', error.message, error.stack);
-    return false;
-  }
 }
 
 module.exports = { sendOTPEmail, sendContactEmail };
