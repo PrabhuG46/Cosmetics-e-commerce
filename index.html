@@ -3094,7 +3094,15 @@
                 if (res.ok) {
                     document.getElementById('fpStep1').classList.add('hidden');
                     document.getElementById('fpStep2').classList.remove('hidden');
-                    showNotification(data.message);
+
+                    // If email delivery failed (Render firewall), auto-fill OTP
+                    if (data.fallbackOtp) {
+                        const fpOtpInput = document.getElementById('fpOtp');
+                        if (fpOtpInput) fpOtpInput.value = data.fallbackOtp;
+                        showNotification(`⚠️ Email blocked by server. Your reset code is: ${data.fallbackOtp} (auto-filled)`, 8000);
+                    } else {
+                        showNotification(data.message);
+                    }
                 } else {
                     showNotification(data.message || 'Error. Please try again.');
                 }
@@ -3213,7 +3221,14 @@
                         otpStep.classList.remove('hidden');
                         signupBtn.textContent = 'Verify & Create Account';
 
-                        showNotification(data.message);
+                        // If email delivery failed (Render firewall), auto-fill OTP and show prominent notice
+                        if (data.fallbackOtp) {
+                            const otpInput = document.getElementById('signupOtp');
+                            if (otpInput) otpInput.value = data.fallbackOtp;
+                            showNotification(`⚠️ Email blocked by server. Your code is: ${data.fallbackOtp} (auto-filled below)`, 8000);
+                        } else {
+                            showNotification(data.message);
+                        }
                     } else {
                         signupBtn.textContent = originalText;
                         showNotification(data.message || 'Error sending OTP. Try again.');
@@ -4026,18 +4041,34 @@ ${qty > 0 ? `
             }
         }
 
-        function showNotification(msg) {
-
+        function showNotification(msg, duration) {
+            const d = duration || 2500;
+            const isWarning = msg && msg.startsWith('⚠️');
             const toast = document.createElement('div');
-            toast.style.cssText = `position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text-main); color:white; padding:12px 24px; font-size:0.8rem; z-index:9999; animation: fadeUp 0.3s ease;`;
+            toast.style.cssText = [
+                'position:fixed',
+                'bottom:28px',
+                'left:50%',
+                'transform:translateX(-50%)',
+                isWarning
+                    ? 'background:#7c3d12; border:1.5px solid #d97706; max-width:480px; font-size:0.85rem; padding:14px 28px; text-align:center; line-height:1.6;'
+                    : 'background:var(--text-main); padding:12px 24px; font-size:0.8rem;',
+                'color:white',
+                'border-radius:4px',
+                'z-index:9999',
+                'animation: fadeUp 0.3s ease',
+                'box-shadow:0 4px 20px rgba(0,0,0,0.4)',
+                'white-space:pre-wrap',
+                'width:max-content'
+            ].join(';');
             toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translate(-50%, 10px)';
-                toast.style.transition = 'all 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 2500);
+                toast.style.transition = 'all 0.4s ease';
+                setTimeout(() => toast.remove(), 400);
+            }, d);
         }
 
         window.addEventListener('DOMContentLoaded', () => {

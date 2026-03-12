@@ -7,6 +7,9 @@ const { Resend } = require('resend');
 // Initialize Resend with the provided API key
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Log at startup so you can verify the key is loaded in Render
+console.log(`📧 Resend key loaded: ${process.env.RESEND_API_KEY ? 'YES (' + process.env.RESEND_API_KEY.substring(0, 8) + '...)' : '❌ MISSING'}`);
+
 /**
  * Send OTP via email
  * @param {string} email  - Recipient email address
@@ -53,14 +56,15 @@ async function sendOTPEmail(email, otp) {
     });
 
     if (error) {
-      console.error("❌ Email OTP Error from Resend:", error);
+      console.error("❌ Email OTP Error from Resend:", JSON.stringify(error));
+      console.error("   → statusCode:", error.statusCode, "| name:", error.name, "| message:", error.message);
       return false;
     }
 
     console.log(`✅ OTP email sent to ${email} — Message ID: ${data.id}`);
     return true;
   } catch (error) {
-    console.error("❌ Email OTP Catch Error:", error.message);
+    console.error("❌ Email OTP Catch Error:", error.message, error.stack);
     return false;
   }
 }
@@ -116,14 +120,15 @@ async function sendContactEmail(senderName, senderEmail, message) {
     });
 
     if (error) {
-      console.error('❌ Contact Email Error from Resend:', error);
+      console.error('❌ Contact Email Error from Resend:', JSON.stringify(error));
+      console.error('   → statusCode:', error.statusCode, '| name:', error.name, '| message:', error.message);
       return false;
     }
 
     console.log(`✅ Contact inquiry from ${senderName} (${senderEmail}) delivered — ID: ${data.id}`);
     return true;
   } catch (error) {
-    console.error('❌ Contact Email Catch Error:', error.message);
+    console.error('❌ Contact Email Catch Error:', error.message, error.stack);
     return false;
   }
 }
