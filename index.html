@@ -2086,73 +2086,9 @@
                             </div>
                         </div>
                         <button class="submit-btn" onclick="handleLogin()">Sign In</button>
-                        <p style="text-align:center; margin-top:1rem; font-size:0.8rem;">
-                            <span style="color:var(--accent); cursor:pointer;"
-                                onclick="toggleForgotPassword(true)">Forgot password?</span>
-                        </p>
                         <p style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
                             New here? <span style="color: var(--accent); cursor: pointer; font-weight: 600;"
                                 onclick="toggleAuthMode('signup')">Create Account</span>
-                        </p>
-                    </div>
-
-                    <!-- Forgot Password Form -->
-                    <div id="forgotForm" class="hidden">
-                        <div style="text-align:center; margin-bottom:2rem;">
-                            <h2 style="font-size:2.2rem;">Reset Password</h2>
-                            <p style="font-size:0.85rem; color:var(--text-muted);">Enter your registered email to reset
-                                your password</p>
-                        </div>
-
-                        <div id="fpResetStep">
-                            <div class="form-group">
-                                <label>Registered Email Address</label>
-                                <input type="email" id="fpEmail" placeholder="your@email.com"
-                                    onkeydown="if(event.key==='Enter') document.getElementById('fpNewPass').focus()">
-                            </div>
-                            <div class="form-group">
-                                <label>New Password</label>
-                                <div class="pw-wrapper">
-                                    <input type="password" id="fpNewPass" placeholder="Min. 6 characters"
-                                        onkeydown="if(event.key==='Enter') document.getElementById('fpConfirmPass').focus()">
-                                    <button type="button" class="pw-eye" tabindex="-1"
-                                        onclick="togglePassword('fpNewPass', this)">
-                                        <svg viewBox="0 0 24 24">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                            <circle cx="12" cy="12" r="3" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Confirm New Password</label>
-                                <div class="pw-wrapper">
-                                    <input type="password" id="fpConfirmPass" placeholder="Repeat new password"
-                                        onkeydown="if(event.key==='Enter') handleResetPassword()">
-                                    <button type="button" class="pw-eye" tabindex="-1"
-                                        onclick="togglePassword('fpConfirmPass', this)">
-                                        <svg viewBox="0 0 24 24">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                            <circle cx="12" cy="12" r="3" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <button class="submit-btn" onclick="handleResetPassword()">Reset Password</button>
-                        </div>
-
-                        <!-- Success -->
-                        <div id="fpSuccessStep" class="hidden" style="text-align:center; padding:2rem 0;">
-                            <div style="font-size:3rem; margin-bottom:1rem;">✅</div>
-                            <h3 style="font-size:1.5rem; margin-bottom:0.5rem;">Password Reset!</h3>
-                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:2rem;">You can now sign
-                                in with your new password.</p>
-                            <button class="submit-btn" onclick="toggleForgotPassword(false)">Back to Sign In</button>
-                        </div>
-
-                        <p style="text-align:center; margin-top:1.5rem; font-size:0.8rem; color:var(--text-muted);">
-                            <span style="color:var(--accent); cursor:pointer;"
-                                onclick="toggleForgotPassword(false)">&larr; Back to Sign In</span>
                         </p>
                     </div>
 
@@ -3042,7 +2978,6 @@
             document.getElementById('authTitle').textContent = isSigningUp ? 'Create Account' : 'Sign In';
             document.getElementById('loginForm').classList.toggle('hidden', isSigningUp);
             document.getElementById('signupForm').classList.toggle('hidden', !isSigningUp);
-            document.getElementById('forgotForm').classList.add('hidden');
             document.getElementById('authTitle').style.display = '';
             document.getElementById('authHeader').style.display = '';
 
@@ -3065,48 +3000,6 @@
             }
         }
 
-
-        function toggleForgotPassword(show) {
-            document.getElementById('loginForm').classList.toggle('hidden', show);
-            document.getElementById('forgotForm').classList.toggle('hidden', !show);
-            document.getElementById('authHeader').style.display = show ? 'none' : '';
-            // Reset forgot form
-            document.getElementById('fpResetStep').classList.remove('hidden');
-            document.getElementById('fpSuccessStep').classList.add('hidden');
-            if (document.getElementById('fpEmail')) document.getElementById('fpEmail').value = '';
-            if (document.getElementById('fpNewPass')) document.getElementById('fpNewPass').value = '';
-            if (document.getElementById('fpConfirmPass')) document.getElementById('fpConfirmPass').value = '';
-        }
-
-        async function handleResetPassword() {
-            const email = document.getElementById('fpEmail').value.trim();
-            const newPass = document.getElementById('fpNewPass').value;
-            const confirmPass = document.getElementById('fpConfirmPass').value;
-
-            if (!email || !email.includes('@')) return showNotification('Enter a valid email address.');
-            if (!newPass || newPass.length < 6) return showNotification('Password must be at least 6 characters.');
-            if (newPass !== confirmPass) return showNotification('Passwords do not match.');
-
-            showLoader('Resetting Password...');
-            try {
-                const res = await fetch(`${API_URL}/auth/reset-password`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, newPassword: newPass })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    document.getElementById('fpResetStep').classList.add('hidden');
-                    document.getElementById('fpSuccessStep').classList.remove('hidden');
-                } else {
-                    showNotification(data.message || 'Reset failed. Try again.');
-                }
-            } catch (e) {
-                showNotification('Connection error.');
-            } finally {
-                hideLoader();
-            }
-        }
 
         async function handleLogin() {
             const phone = document.getElementById('loginPhone').value.trim();
