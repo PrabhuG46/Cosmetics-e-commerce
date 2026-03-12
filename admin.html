@@ -448,6 +448,9 @@
                 <li data-section="usersSection">
                     <span>Users</span>
                 </li>
+                <li data-section="passwordSection">
+                    <span>Passwords</span>
+                </li>
             </ul>
         </div>
 
@@ -563,6 +566,32 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Password Management Section -->
+            <div id="passwordSection" class="section">
+                <div class="card">
+                    <h2 style="font-family:'Cormorant Garamond'; font-size: 1.8rem; margin-bottom: 2rem;">Password
+                        Management</h2>
+                    <div class="search-box">
+                        <input type="text" id="passwordSearch" placeholder="Search by name or email..."
+                            onkeyup="searchPasswordUsers()">
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="passwordTable">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -636,6 +665,39 @@
                     </select>
                 </div>
                 <button type="submit" class="submit-btn">Update Records</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePasswordModal()">✕</span>
+            <h2 style="font-family:'Cormorant Garamond'; margin-bottom: 2rem;">Reset User Password</h2>
+            <form id="passwordForm">
+                <input type="hidden" id="pwUserId">
+                <div class="form-group">
+                    <label>User Name</label>
+                    <input type="text" id="pwUserName" readonly style="background: #f5f5f5;">
+                </div>
+                <div class="form-group">
+                    <label>User Email</label>
+                    <input type="email" id="pwUserEmail" readonly style="background: #f5f5f5;">
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="password" id="pwNewPassword" placeholder="Min. 6 characters" required>
+                        <button type="button" class="btn" onclick="togglePwVisibility('pwNewPassword')">👁️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="password" id="pwConfirmPassword" placeholder="Repeat password" required>
+                        <button type="button" class="btn" onclick="togglePwVisibility('pwConfirmPassword')">👁️</button>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Set Password</button>
             </form>
         </div>
     </div>
@@ -963,6 +1025,92 @@
                 row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
             });
         }
+
+        // ────── Password Management Functions ──────
+        async function loadPasswordUsers() {
+            try {
+                const response = await fetch(`${API_URL}/admin/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const users = await response.json();
+                const tbody = document.querySelector('#passwordTable tbody');
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td style="font-weight: 500;">${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone}</td>
+                        <td><span style="color: #666;">Active</span></td>
+                        <td><button class="btn btn-primary" onclick="openPasswordModal('${user._id}', '${user.name}', '${user.email}')">Reset Password</button></td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function openPasswordModal(userId, userName, userEmail) {
+            document.getElementById('pwUserId').value = userId;
+            document.getElementById('pwUserName').value = userName;
+            document.getElementById('pwUserEmail').value = userEmail;
+            document.getElementById('pwNewPassword').value = '';
+            document.getElementById('pwConfirmPassword').value = '';
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+
+        function togglePwVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('pwUserId').value;
+            const newPassword = document.getElementById('pwNewPassword').value;
+            const confirmPassword = document.getElementById('pwConfirmPassword').value;
+
+            if (newPassword.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/admin/users/${userId}/password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ password: newPassword })
+                });
+                if (res.ok) {
+                    alert('Password updated successfully');
+                    closePasswordModal();
+                    loadPasswordUsers();
+                } else {
+                    const data = await res.json();
+                    alert(data.message || 'Failed to update password');
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        });
+
+        function searchPasswordUsers() {
+            const val = document.getElementById('passwordSearch').value.toLowerCase();
+            document.querySelectorAll('#passwordTable tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
+            });
+        }
+
+        // Hook into section loading
+        const originalShowAdminSection = showAdminSection;
+        window.showAdminSection = function (section, addToHistory = true) {
+            originalShowAdminSection(section, addToHistory);
+            if (section === 'passwordSection') loadPasswordUsers();
+        };
     </script>
 </body>
 

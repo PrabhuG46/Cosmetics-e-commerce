@@ -2096,28 +2096,18 @@
                         </p>
                     </div>
 
-                    <!-- Forgot Password Form (3-step) -->
+                    <!-- Forgot Password Form -->
                     <div id="forgotForm" class="hidden">
                         <div style="text-align:center; margin-bottom:2rem;">
                             <h2 style="font-size:2.2rem;">Reset Password</h2>
-                            <p style="font-size:0.85rem; color:var(--text-muted);">We'll send a code to your email</p>
+                            <p style="font-size:0.85rem; color:var(--text-muted);">Enter your registered email to reset
+                                your password</p>
                         </div>
 
-                        <!-- Step 1: Enter email -->
-                        <div id="fpStep1">
+                        <div id="fpResetStep">
                             <div class="form-group">
                                 <label>Registered Email Address</label>
                                 <input type="email" id="fpEmail" placeholder="your@email.com"
-                                    onkeydown="if(event.key==='Enter') handleForgotSendOTP()">
-                            </div>
-                            <button class="submit-btn" onclick="handleForgotSendOTP()">Send Reset Code</button>
-                        </div>
-
-                        <!-- Step 2: Enter OTP + new password -->
-                        <div id="fpStep2" class="hidden">
-                            <div class="form-group">
-                                <label>Verification Code</label>
-                                <input type="text" id="fpOtp" placeholder="6 random words"
                                     onkeydown="if(event.key==='Enter') document.getElementById('fpNewPass').focus()">
                             </div>
                             <div class="form-group">
@@ -2149,12 +2139,10 @@
                                 </div>
                             </div>
                             <button class="submit-btn" onclick="handleResetPassword()">Reset Password</button>
-                            <p style="text-align:center; margin-top:1rem; font-size:0.8rem; color:var(--accent); cursor:pointer;"
-                                onclick="handleForgotSendOTP()">Resend Code</p>
                         </div>
 
-                        <!-- Step 3: Success -->
-                        <div id="fpStep3" class="hidden" style="text-align:center; padding:2rem 0;">
+                        <!-- Success -->
+                        <div id="fpSuccessStep" class="hidden" style="text-align:center; padding:2rem 0;">
                             <div style="font-size:3rem; margin-bottom:1rem;">✅</div>
                             <h3 style="font-size:1.5rem; margin-bottom:0.5rem;">Password Reset!</h3>
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:2rem;">You can now sign
@@ -2204,25 +2192,13 @@
                             </div>
                         </div>
 
-                        <!-- Signup OTP Section -->
-                        <div id="signupOtpStep" class="hidden">
-                            <div class="form-group">
-                                <label>Email Verification Code</label>
-                                <input type="text" id="signupOtp" placeholder="Enter 6 random words"
-                                    onkeydown="if(event.key==='Enter') handleSignup()">
-                            </div>
-                            <p
-                                style="text-align: center; margin-bottom: 2rem; font-size: 0.75rem; color: var(--text-muted);">
-                                Enter the 6 random words above to verify your request.</p>
-                        </div>
-
                         <label class="checkbox-group" id="consentLabel">
                             <input type="checkbox" id="consentCheckbox">
                             <span>I consent to the collection and processing of my personal details for a bespoke studio
                                 experience. (Mandatory)</span>
                         </label>
 
-                        <button class="submit-btn" id="signupBtn" onclick="handleSignup()">Continue</button>
+                        <button class="submit-btn" id="signupBtn" onclick="handleSignup()">Create Account</button>
 
                         <p style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-muted);">
                             Already a member? <span style="color: var(--accent); cursor: pointer; font-weight: 600;"
@@ -3072,9 +3048,8 @@
 
             // Reset signup form state
             document.getElementById('signupInputs').classList.remove('hidden');
-            document.getElementById('signupOtpStep').classList.add('hidden');
             document.getElementById('consentLabel').classList.remove('hidden');
-            document.getElementById('signupBtn').textContent = 'Continue';
+            document.getElementById('signupBtn').textContent = 'Create Account';
         }
 
         function togglePassword(inputId, btn) {
@@ -3092,58 +3067,23 @@
 
 
         function toggleForgotPassword(show) {
-
             document.getElementById('loginForm').classList.toggle('hidden', show);
             document.getElementById('forgotForm').classList.toggle('hidden', !show);
             document.getElementById('authHeader').style.display = show ? 'none' : '';
-            // Reset forgot form to step 1
-            document.getElementById('fpStep1').classList.remove('hidden');
-            document.getElementById('fpStep2').classList.add('hidden');
-            document.getElementById('fpStep3').classList.add('hidden');
+            // Reset forgot form
+            document.getElementById('fpResetStep').classList.remove('hidden');
+            document.getElementById('fpSuccessStep').classList.add('hidden');
             if (document.getElementById('fpEmail')) document.getElementById('fpEmail').value = '';
-        }
-
-        async function handleForgotSendOTP() {
-            const email = document.getElementById('fpEmail').value.trim();
-            if (!email || !email.includes('@')) return showNotification('Enter a valid email address.');
-
-            showLoader('Sending Reset Code...');
-            try {
-                const res = await fetch(`${API_URL}/auth/forgot-password`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    document.getElementById('fpStep1').classList.add('hidden');
-                    document.getElementById('fpStep2').classList.remove('hidden');
-
-                    // If random words provided, auto-fill
-                    if (data.fallbackOtp) {
-                        const fpOtpInput = document.getElementById('fpOtp');
-                        if (fpOtpInput) fpOtpInput.value = data.fallbackOtp;
-                        showNotification(`Your 6 random words are: ${data.fallbackOtp} (auto-filled)`, 8000);
-                    } else {
-                        showNotification(data.message);
-                    }
-                } else {
-                    showNotification(data.message || 'Error. Please try again.');
-                }
-            } catch (e) {
-                showNotification('Connection error.');
-            } finally {
-                hideLoader();
-            }
+            if (document.getElementById('fpNewPass')) document.getElementById('fpNewPass').value = '';
+            if (document.getElementById('fpConfirmPass')) document.getElementById('fpConfirmPass').value = '';
         }
 
         async function handleResetPassword() {
             const email = document.getElementById('fpEmail').value.trim();
-            const otp = document.getElementById('fpOtp').value.trim();
             const newPass = document.getElementById('fpNewPass').value;
             const confirmPass = document.getElementById('fpConfirmPass').value;
 
-            if (!otp || otp.trim().split(/\s+/).length !== 6) return showNotification('Enter the 6 random words.');
+            if (!email || !email.includes('@')) return showNotification('Enter a valid email address.');
             if (!newPass || newPass.length < 6) return showNotification('Password must be at least 6 characters.');
             if (newPass !== confirmPass) return showNotification('Passwords do not match.');
 
@@ -3152,12 +3092,12 @@
                 const res = await fetch(`${API_URL}/auth/reset-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, otp, newPassword: newPass })
+                    body: JSON.stringify({ email, newPassword: newPass })
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    document.getElementById('fpStep2').classList.add('hidden');
-                    document.getElementById('fpStep3').classList.remove('hidden');
+                    document.getElementById('fpResetStep').classList.add('hidden');
+                    document.getElementById('fpSuccessStep').classList.remove('hidden');
                 } else {
                     showNotification(data.message || 'Reset failed. Try again.');
                 }
@@ -3217,74 +3157,22 @@
 
             if (!name || !email || !phone || !password) return showNotification('All fields are mandatory.');
             if (!consent) return showNotification('Please accept detail collection.');
+            if (password.length < 6) return showNotification('Password must be at least 6 characters.');
+            if (phone.length !== 10) return showNotification('Phone number must be 10 digits.');
 
-            const otpStep = document.getElementById('signupOtpStep');
-            const signupInputs = document.getElementById('signupInputs');
-            const consentLabel = document.getElementById('consentLabel');
-            const signupBtn = document.getElementById('signupBtn');
-
-            if (otpStep.classList.contains('hidden')) {
-                // Step 1: Send OTP to the user's email
-                const originalText = signupBtn.textContent;
-                signupBtn.textContent = 'Sending Code...';
-                signupBtn.disabled = true;
-                signupBtn.style.opacity = '0.7';
-
-                showLoader('Sending Verification Code...');
-                try {
-                    const res = await fetch(`${API_URL}/auth/send-otp`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email })
-                    });
-                    const data = await res.json();
-
-                    if (res.ok) {
-                        signupInputs.classList.add('hidden');
-                        consentLabel.classList.add('hidden');
-                        otpStep.classList.remove('hidden');
-                        signupBtn.textContent = 'Verify & Create Account';
-
-                        // Auto-fill random words
-                        if (data.fallbackOtp) {
-                            const otpInput = document.getElementById('signupOtp');
-                            if (otpInput) otpInput.value = data.fallbackOtp;
-                            showNotification(`Your 6 random words are: ${data.fallbackOtp} (auto-filled below)`, 8000);
-                        } else {
-                            showNotification(data.message);
-                        }
-                    } else {
-                        signupBtn.textContent = originalText;
-                        showNotification(data.message || 'Error sending OTP. Try again.');
-                    }
-                } catch (e) {
-                    signupBtn.textContent = originalText;
-                    showNotification('Connection Error.');
-                } finally {
-                    signupBtn.disabled = false;
-                    signupBtn.style.opacity = '1';
-                    hideLoader();
-                }
-                return;
-            }
-
-            // Step 2: Verify OTP and Register
-            const otp = document.getElementById('signupOtp').value;
-            if (!otp || otp.trim().split(/\s+/).length !== 6) return showNotification('6 random words required.');
-
-            showLoader('Verifying Code...');
+            showLoader('Creating Account...');
             try {
                 const res = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, phone, address, password, otp })
+                    body: JSON.stringify({ name, email, phone, address, password })
                 });
                 const data = await res.json();
 
                 if (res.ok) {
                     localStorage.setItem('user', JSON.stringify(data.user));
                     if (data.token) localStorage.setItem('userToken', data.token);
-                    showNotification('Account verified. Welcome.');
+                    showNotification('Account created successfully. Welcome!');
                     const postAction = sessionStorage.getItem('postLoginAction');
                     if (postAction === 'checkout') {
                         sessionStorage.removeItem('postLoginAction');
@@ -3294,7 +3182,7 @@
                         showPage('profile');
                     }
                 } else {
-                    showNotification(data.message || 'Verification failed.');
+                    showNotification(data.message || 'Registration failed.');
                 }
             } catch (e) {
                 showNotification('Server connection error.');
