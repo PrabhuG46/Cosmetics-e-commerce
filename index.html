@@ -92,7 +92,12 @@
         }
 
         /* Typography — Google Sans for all headings except .logo */
-        h1, h2, h3, h4, h5, h6 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             font-family: var(--gs-font);
             font-weight: 600;
         }
@@ -148,7 +153,7 @@
             padding-right: 4px;
         }
 
-        .mobile-search-inner > svg:first-child {
+        .mobile-search-inner>svg:first-child {
             position: absolute;
             left: 12px;
             width: 15px;
@@ -212,9 +217,10 @@
         }
 
         .mob-filter-btn:hover {
-            background: rgba(0,0,0,0.05);
+            background: rgba(0, 0, 0, 0.05);
             border-radius: 4px;
         }
+
         /* Profile page search bar hiding */
         .profile-active-search-hide .mobile-search-row {
             display: none !important;
@@ -360,8 +366,10 @@
         /* Hero Section */
         .hero {
             min-height: 42vh;
-            margin: 0.5rem auto 1.5rem; /* ✅ center container */
-            width: 92%; /* ✅ equal left & right space */
+            margin: 0.5rem auto 1.5rem;
+            /* ✅ center container */
+            width: 92%;
+            /* ✅ equal left & right space */
             padding: 3rem 5%;
             display: flex;
             align-items: flex-end;
@@ -381,7 +389,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(to top, rgba(20,10,15,0.72) 0%, rgba(20,10,15,0.18) 60%, transparent 100%);
+            background: linear-gradient(to top, rgba(20, 10, 15, 0.72) 0%, rgba(20, 10, 15, 0.18) 60%, transparent 100%);
             z-index: 1;
         }
 
@@ -403,7 +411,7 @@
             font-size: 0.68rem;
             text-transform: uppercase;
             letter-spacing: 3px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             margin-bottom: 0.5rem;
             display: block;
             animation-delay: 0.1s;
@@ -419,12 +427,12 @@
             color: #fff;
             font-family: var(--gs-font);
             font-weight: 700;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
         }
 
         .hero-subtitle {
             font-size: 1rem;
-            color: rgba(255,255,255,0.78);
+            color: rgba(255, 255, 255, 0.78);
             margin-bottom: 1.8rem;
             font-family: var(--gs-font);
             font-weight: 400;
@@ -449,7 +457,7 @@
         .hero-btn:hover {
             background: var(--pink-light);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
 
         /* Category Chips */
@@ -461,7 +469,10 @@
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
-        .category-scroll::-webkit-scrollbar { display: none; }
+
+        .category-scroll::-webkit-scrollbar {
+            display: none;
+        }
 
         .category-chip {
             display: flex;
@@ -472,8 +483,14 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        .category-chip:hover { transform: translateY(-2px); }
-        .category-chip:hover .chip-img-wrap { box-shadow: 0 6px 18px rgba(139,94,107,0.35); }
+
+        .category-chip:hover {
+            transform: translateY(-2px);
+        }
+
+        .category-chip:hover .chip-img-wrap {
+            box-shadow: 0 6px 18px rgba(139, 94, 107, 0.35);
+        }
 
         .chip-img-wrap {
             width: 60px;
@@ -484,15 +501,18 @@
             background: var(--card-bg);
             transition: box-shadow 0.2s;
         }
+
         .chip-img-wrap.active-chip {
             border-color: var(--accent);
-            box-shadow: 0 4px 14px rgba(139,94,107,0.3);
+            box-shadow: 0 4px 14px rgba(139, 94, 107, 0.3);
         }
+
         .chip-img-wrap img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
         .chip-label {
             font-size: 0.72rem;
             font-family: var(--gs-font);
@@ -527,7 +547,10 @@
             top: 56px;
             z-index: 100;
         }
-        .filter-bar::-webkit-scrollbar { display: none; }
+
+        .filter-bar::-webkit-scrollbar {
+            display: none;
+        }
 
         .filter-chip {
             display: flex;
@@ -546,11 +569,14 @@
             transition: all 0.2s;
             flex-shrink: 0;
         }
-        .filter-chip:hover, .filter-chip.active {
+
+        .filter-chip:hover,
+        .filter-chip.active {
             background: var(--accent);
             border-color: var(--accent);
             color: white;
         }
+
         .filter-chip svg {
             width: 12px;
             height: 12px;
@@ -569,7 +595,7 @@
             z-index: 1500;
             justify-content: space-around;
             align-items: center;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
         }
 
         .mob-nav-item {
@@ -583,9 +609,11 @@
             transition: all 0.2s;
             color: var(--text-muted);
         }
+
         .mob-nav-item.active {
             color: var(--accent);
         }
+
         .mob-nav-item svg {
             width: 22px;
             height: 22px;
@@ -593,9 +621,11 @@
             stroke-width: 1.8;
             fill: none;
         }
+
         .mob-nav-item.active svg {
             stroke: var(--accent);
         }
+
         .mob-nav-item.active .mob-nav-dot {
             width: 32px;
             height: 3px;
@@ -604,6 +634,7 @@
             position: absolute;
             bottom: -2px;
         }
+
         .mob-nav-label {
             font-size: 0.65rem;
             font-family: var(--gs-font);
@@ -1556,9 +1587,15 @@
             .pd-review-summary {
                 grid-template-columns: 1fr;
             }
+
             /* Make body account for bottom nav */
-            body { padding-bottom: 62px; }
-            .mobile-bottom-nav { display: flex; }
+            body {
+                padding-bottom: 62px;
+            }
+
+            .mobile-bottom-nav {
+                display: flex;
+            }
         }
 
         /* Forms */
@@ -2145,7 +2182,7 @@
                     <span class="cart-badge" id="mobileCartBadge">0</span>
                 </button>
                 <!-- Hamburger on RIGHT (last icon on mobile) -->
-                
+
             </div>
         </div>
     </header>
@@ -2196,7 +2233,7 @@
         <!-- Home Page -->
         <div id="homePage">
             <!-- Category Chips -->
-            
+
             <!-- Hero Banner -->
             <section class="hero">
                 <div class="hero-content-inner">
@@ -2218,17 +2255,25 @@
             <!-- Filter Bar -->
             <div class="filter-bar">
                 <div class="filter-chip active" id="sortChip" onclick="toggleFilterChip('sortChip')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M7 12h10M11 18h2" />
+                    </svg>
                     Sort by
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
                 </div>
                 <div class="filter-chip" id="catChip" onclick="toggleFilterChip('catChip')">
                     Category
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
                 </div>
                 <div class="filter-chip" id="priceChip" onclick="toggleFilterChip('priceChip')">
                     Price Range
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
                 </div>
                 <div class="filter-chip" id="ratingChip" onclick="toggleFilterChip('ratingChip')">
                     Rating
@@ -3784,7 +3829,8 @@ ${qty > 0 ? `
 
         async function submitReview(productId) {
             const user = JSON.parse(localStorage.getItem('user') || 'null');
-            if (!user || !user.token) return showNotification('Please sign in to review.');
+            const token = localStorage.getItem('userToken');
+            if (!user || !token) return showNotification('Please sign in to review.');
 
             const rating = parseInt(document.getElementById('pdRating').value);
             const title = document.getElementById('pdRevTitle').value.trim();
@@ -4186,35 +4232,38 @@ ${qty > 0 ? `
     <nav class="mobile-bottom-nav" id="mobileBottomNav">
         <div class="mob-nav-item active" id="mobNavHome" onclick="showPage('home'); setMobNavActive('mobNavHome')">
             <svg viewBox="0 0 24 24">
-                <path d="M3 12L12 3l9 9" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M9 21V12h6v9" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 12L12 3l9 9" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M9 21V12h6v9" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             <span class="mob-nav-label">Home</span>
         </div>
         <div class="mob-nav-item" id="mobNavProducts" onclick="showPage('products'); setMobNavActive('mobNavProducts')">
             <svg viewBox="0 0 24 24">
-                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                <rect x="14" y="14" width="7" height="7" rx="1"/>
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
             </svg>
             <span class="mob-nav-label">Products</span>
         </div>
-        <div class="mob-nav-item" id="mobNavWishlist" onclick="toggleWishlistSidebar(); setMobNavActive('mobNavWishlist')">
+        <div class="mob-nav-item" id="mobNavWishlist"
+            onclick="toggleWishlistSidebar(); setMobNavActive('mobNavWishlist')">
             <svg viewBox="0 0 24 24">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round"/>
+                <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                    stroke-linecap="round" />
             </svg>
             <span class="mob-nav-label">Wishlist</span>
         </div>
         <div class="mob-nav-item" id="mobNavProfile" onclick="showPage('profile'); setMobNavActive('mobNavProfile')">
             <svg viewBox="0 0 24 24">
-                <path d="M20 21V19C20 17.9 19.1 17 18 17H6C4.9 17 4 17.9 4 19V21" stroke-linecap="round"/>
-                <circle cx="12" cy="7" r="4" stroke-linecap="round"/>
+                <path d="M20 21V19C20 17.9 19.1 17 18 17H6C4.9 17 4 17.9 4 19V21" stroke-linecap="round" />
+                <circle cx="12" cy="7" r="4" stroke-linecap="round" />
             </svg>
             <span class="mob-nav-label">Profile</span>
         </div>
     </nav>
 
-    </body>
+</body>
 
 </html>
