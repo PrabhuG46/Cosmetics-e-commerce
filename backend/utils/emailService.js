@@ -70,4 +70,67 @@ async function sendContactEmail(senderName, senderEmail, message) {
   }
 }
 
-module.exports = { sendContactEmail };
+/**
+ * Send Review notification email to studio owner
+ * @param {string} reviewerName  - Customer full name
+ * @param {number} rating        - Review rating
+ * @param {string} title         - Review title
+ * @param {string} comment       - Review comment
+ * @param {string} productName   - Product reviewed
+ * @returns {boolean}            - true if sent successfully
+ */
+async function sendReviewEmail(reviewerName, rating, title, comment, productName) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Gwen Beauty Studio Reviews <onboarding@resend.dev>',
+      to: 'prabhuak2446@gmail.com',
+      subject: `New ★${rating} Review from ${reviewerName} — ${productName}`,
+      html: `
+        <div style="font-family: 'Georgia', serif; max-width: 560px; margin: 0 auto; color: #2c2c2c;">
+          <div style="background: #e91e63; padding: 28px 32px; text-align: center;">
+            <h1 style="color: #ffffff; letter-spacing: 4px; font-size: 16px; margin: 0; text-transform: uppercase;">Gwen Beauty Studio</h1>
+            <p style="color: #fce4ec; margin: 6px 0 0; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">New Product Review</p>
+          </div>
+
+          <div style="padding: 36px 32px; background: #faf9f6; border: 1px solid #e8e0d8; border-top: none;">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 28px;">
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; width: 110px;">Reviewer</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; font-weight: 600;">${reviewerName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999;">Product</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; font-weight: 600;">${productName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999;">Rating</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 16px; font-weight: bold; color: #ff9800;">${'★'.repeat(rating)}${'☆'.repeat(5-rating)} (${rating}/5)</td>
+              </tr>
+            </table>
+
+            <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 6px;">${title}</p>
+            <div style="background: #fdfaf6; padding: 20px; border: 1px solid #f0ebe4; border-radius: 2px; font-size: 14px; line-height: 1.8;">${comment}</div>
+          </div>
+
+          <div style="padding: 18px 32px; text-align: center; background: #f0ebe4;">
+            <p style="font-size: 11px; color: #aaa; margin: 0; letter-spacing: 1px; text-transform: uppercase;">
+              &copy; 2025 Gwen Beauty Studio. All rights reserved.
+            </p>
+          </div>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error('❌ Review Email Error:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('❌ Review Email Catch Error:', error.message);
+    return false;
+  }
+}
+
+module.exports = { sendContactEmail, sendReviewEmail };
+

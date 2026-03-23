@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Review = require('../models/Review');
+const Product = require('../models/Product');
+const User = require('../models/User');
+const { sendReviewEmail } = require('../utils/emailService');
 const auth = require('../middleware/auth');
 
 // GET /api/reviews/:productId — fetch all reviews for a product
@@ -40,23 +43,38 @@ router.post('/:productId', auth, async (req, res) => {
         if (!comment || !comment.trim())
             return res.status(400).json({ message: 'Review comment is required.' });
 
+        const userId = req.userId; // From auth middleware
+        if (!userId) return res.status(401).json({ message: 'Invalid User' });
+
+        const user = await User.findById(userId);
+        const nameOfReviewer = user ? user.name : "Anonymous";
+
         // Check for existing review
         const existing = await Review.findOne({
             productId: req.params.productId,
-            userId: req.user.id
+            userId: userId
         });
         if (existing)
             return res.status(400).json({ message: 'You have already reviewed this product.' });
 
         const review = await Review.create({
             productId: req.params.productId,
-            userId: req.user.id,
-            userName: req.user.name,
+            userId: userId,
+            userName: nameOfReviewer,
             rating: Number(rating),
             title: title.trim(),
             comment: comment.trim(),
             verified: true  // assume verified if user is logged in
         });
+
+        // Send Email notification to Admin
+        try {
+            const product = await Product.findById(req.params.productId);
+            const productName = product ? product.name : "Product";
+            await sendReviewEmail(nameOfReviewer, Number(rating), title.trim(), comment.trim(), productName);
+        } catch (emailErr) {
+            console.error('Failed to send review email notification:', emailErr);
+        }
 
         res.status(201).json({ message: 'Review submitted!', review });
     } catch (err) {

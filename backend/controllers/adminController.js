@@ -281,3 +281,17 @@ exports.updateUserPassword = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// Get All Reviews (Admin)
+exports.getAllReviews = async (req, res) => {
+  try {
+    const Review = require("../models/Review");
+    const reviews = await Review.find()
+      .populate("productId", "name")
+      .sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (error) {
+    console.error("Get reviews error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

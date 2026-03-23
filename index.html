@@ -3796,9 +3796,10 @@ ${qty > 0 ? `
 
             showLoader('Submitting Review...');
             try {
+                const token = localStorage.getItem('userToken');
                 const res = await fetch(`${API_URL}/reviews/${productId}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ rating, title, comment })
                 });
                 const data = await res.json();

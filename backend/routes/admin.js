@@ -29,4 +29,7 @@ router.put(
   adminController.updateUserPassword,
 );
 
+// Review Management (Admin only)
+router.get("/reviews", adminAuth, adminController.getAllReviews);
+
 module.exports = router;
